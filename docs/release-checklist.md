@@ -1,4 +1,4 @@
-# PageLens v1.0.1 release acceptance checklist
+# PageLens v1.0.2 release acceptance checklist
 
 Maintainer: [reika140](https://github.com/reika140)
 
@@ -31,14 +31,15 @@ Maintainer: [reika140](https://github.com/reika140)
 - [ ] No unexpected outbound extension requests; no remote code execution.
 - [ ] Inspect accessibility: keyboard focus, contrast, names and responsive
       scrolling. No serious UI or security defects remain.
-- [ ] Capture real Chrome screenshots; keep fixture previews out of Store images.
+- [ ] Capture real 1280×800 or 640×400 Chrome screenshots, and prepare a
+      440×280 promotional tile; keep fixture previews out of Store images.
 
 ## Publication and ownership
 
 - [ ] Public GitHub repository `reika140/pagelens` exists and the owner confirms
       the `LICENSE`, `AUTHORS.md` and CODEOWNERS attribution.
 - [ ] `docs/privacy.md` is reachable at a stable public HTTPS URL.
-- [ ] Publish `v1.0.1` Git tag and release assets only after Chrome QA.
+- [ ] Publish `v1.0.2` Git tag and release assets only after Chrome QA.
 - [ ] Verify the project is not exposing secrets, private URLs or customer data.
 - [ ] Review current Chrome Web Store policies and listing content.
 - [ ] Fill the Store privacy practices form consistently with the policy.

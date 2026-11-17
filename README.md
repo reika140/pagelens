@@ -26,10 +26,10 @@ PageLens reports what it can observe. It does not assign an arbitrary SEO score,
 
 PageLens is currently available as a **beta build**, not yet through the Chrome Web Store.
 
-1. Open the [latest successful GitHub Actions build](https://github.com/reika140/pagelens/actions/workflows/ci.yml) and download its extension ZIP from **Artifacts** (GitHub sign-in may be required).
-2. Extract the ZIP to a folder.
+1. Open a [successful CI run](https://github.com/reika140/pagelens/actions/workflows/ci.yml) and download the `pagelens-v1.3.3-popup-candidate` artifact (GitHub sign-in may be required).
+2. Unzip the artifact, then extract `releases/pagelens-v1.3.3-chrome-extension.zip`.
 3. Open `chrome://extensions`, enable **Developer mode**, and choose **Load unpacked**.
-4. Select the extracted folder containing `manifest.json`.
+4. Select the extracted extension folder containing `manifest.json`.
 5. Visit a webpage and click the **PageLens** icon in the Chrome toolbar.
 
 The popup scans the active tab when opened. Its six inspectors are available from the icon navigation on the left.

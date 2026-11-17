@@ -25,3 +25,5 @@ be submitted to the Chrome Web Store as genuine screenshots.
 
 Screenshots must match the exact tagged source/extension build and current
 Chrome Web Store image requirements.
+
+The Chromium UI fixture now uses the exact bundled Be Vietnam Pro font files; previews do not rely on remote font services.

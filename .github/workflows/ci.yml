@@ -29,14 +29,14 @@ jobs:
       - name: Upload build and ZIPs
         uses: actions/upload-artifact@v4
         with:
-          name: pagelens-v1.0.1-candidate
+          name: pagelens-v1.3.3-popup-candidate
           path: |
             dist/
             releases/*.zip
             releases/SHA256SUMS.txt
 
   browser:
-    name: Chromium DOM and Side Panel smoke tests
+    name: Chromium DOM and popup smoke tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,8 +56,12 @@ jobs:
         run: npm run build
       - name: Run real DOM fixture tests
         run: npm run test:browser
-      - name: Run compiled Side Panel UI tests
+      - name: Run compiled popup UI tests
         run: npm run test:ui
+      - name: Test first-page organic Google SERP numbering
+        run: npm run test:serp
+      - name: Test automatic Google numbering and On/Off persistence
+        run: npm run test:auto-serp
       - name: Upload compiled fixture previews
         uses: actions/upload-artifact@v4
         with:
@@ -67,3 +71,10 @@ jobs:
             docs/screenshots/overview-fixture-dark-preview.png
             docs/screenshots/headings-fixture-preview.png
             docs/screenshots/links-fixture-preview.png
+            docs/screenshots/google-serp-popup-fixture-preview.png
+            docs/screenshots/google-serp-organic-fixture-preview.png
+            docs/screenshots/google-auto-organic-first-page-fixture.png
+            docs/screenshots/google-serp-ai-interleaved-fixture-preview.png
+            docs/screenshots/google-serp-svg-organic-fixture-preview.png
+            docs/screenshots/google-serp-svg-css-hostile-preview.png
+            docs/screenshots/vector-overlay-fixture.png

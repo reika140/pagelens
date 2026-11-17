@@ -1,6 +1,6 @@
 {
   "name": "pagelens",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "description": "Local-first website inspection Chrome extension",

@@ -7,7 +7,7 @@ PageLens is an open-source Chrome website inspector created by
 inspect the active webpage in a compact Side Panel. PageLens focuses on
 observable evidence rather than an arbitrary SEO score.
 
-> **Version 1.0.1 · Release candidate.** The code builds and passes the
+> **Version 1.0.2 · Release candidate.** The code builds and passes the
 > automated tests listed below. Installation and end-to-end interaction in an
 > unrestricted Chrome profile must be verified before a public Chrome Web Store
 > submission. The Chrome Web Store listing is not yet published.
@@ -48,7 +48,7 @@ observable evidence rather than an arbitrary SEO score.
 
 **Requirements:** Google Chrome 116 or newer on desktop.
 
-1. Download and extract `pagelens-v1.0.1-chrome-extension.zip`.
+1. Download and extract `pagelens-v1.0.2-chrome-extension.zip`.
 2. Visit `chrome://extensions` and enable **Developer mode**.
 3. Select **Load unpacked** and point Chrome to the extracted directory
    containing `manifest.json`.
@@ -62,6 +62,8 @@ Opening the panel from Chrome's built-in Side Panel selector **without**
 clicking the PageLens toolbar icon does not grant `activeTab` access. In that
 case, click PageLens's toolbar icon. If you navigate to a different origin,
 Chrome may revoke access; click the toolbar icon again on the new page.
+When no scan is available, the Side Panel shows a concise instruction rather
+than retry buttons that cannot grant the temporary permission.
 
 ## Permissions and privacy
 
@@ -106,8 +108,8 @@ npm run test:ui
 ```
 
 - `dist/`: ready-to-load unpacked Manifest V3 extension.
-- `releases/pagelens-v1.0.1-source.zip`: public repository source archive.
-- `releases/pagelens-v1.0.1-chrome-extension.zip`: Chrome extension ZIP.
+- `releases/pagelens-v1.0.2-source.zip`: public repository source archive.
+- `releases/pagelens-v1.0.2-chrome-extension.zip`: Chrome extension ZIP.
 - `releases/SHA256SUMS.txt`: checksums for both archives.
 
 The test suite uses Node's built-in test runner for unit/regression tests and

@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "PageLens — Website Inspector",
   "short_name": "PageLens",
-  "version": "1.0.1",
-  "version_name": "1.0.1",
+  "version": "1.0.2",
+  "version_name": "1.0.2",
   "description": "Inspect webpage metadata, headings, images, links and JSON-LD locally in one click.",
   "minimum_chrome_version": "116",
   "permissions": [

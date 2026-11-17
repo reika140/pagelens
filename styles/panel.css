@@ -229,3 +229,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
   .main-content { padding-inline: 10px; }
   .module-tile { padding: 9px; }
 }
+
+/* Single lightweight instruction while a tab lacks activeTab access. */
+.activation-hint { margin: clamp(55px, 22vh, 170px) auto 0; max-width: 350px; padding: 0 12px; text-align: center; color: var(--ink); }
+.activation-hint p { font-size: 12.5px; line-height: 1.65; margin: 0; text-wrap: pretty; }
+.activation-hint .activation-primary { font-weight: 500; }
+.activation-hint .activation-secondary { color: var(--muted); margin-top: 4px; font-size: 11.75px; }
+.module-switch:disabled { opacity: .66; cursor: not-allowed; }

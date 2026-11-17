@@ -201,6 +201,7 @@ function changeTab(section: Section, locator?: string): void {
 function resetPage(): void {
   serial += 1;
   state.scan = null; state.error = null; state.loading = false; state.tabId = null;
+  state.section = 'overview';
   render();
 }
 
@@ -277,18 +278,20 @@ function render(): void {
   const logo = make('div', 'logo-mark'); logo.append(icon('search', 19));
   const brandCopy = make('div', 'brand-copy');
   brandCopy.append(make('h1', '', 'PageLens'));
-  const siteLabel = state.scan ? domain(state.scan.url) : state.loading ? 'Scanning current page' : state.error ? 'Page unavailable' : 'Website inspector';
+  const siteLabel = state.scan ? domain(state.scan.url) : state.loading ? 'Scanning current page' : 'Not scanned';
   brandCopy.append(make('p', 'brand-domain', siteLabel));
   brand.append(logo, brandCopy);
   const topActions = make('div', 'header-actions');
-  topActions.append(
-    button('', () => {
-      state.theme = state.theme === 'dark' ? 'sepia' : 'dark';
-      try { localStorage.setItem('pagelens-theme', state.theme); } catch { /* session only */ }
-      render();
-    }, { icon: state.theme === 'dark' ? 'sun' : 'moon', className: 'icon-btn', title: `Switch to ${state.theme === 'dark' ? 'light' : 'dark'} theme` }),
-    button('', () => void refresh(), { icon: 'refresh', className: 'icon-btn refresh-btn', disabled: state.loading, title: 'Refresh current scan' }),
-  );
+  topActions.append(button('', () => {
+    state.theme = state.theme === 'dark' ? 'sepia' : 'dark';
+    try { localStorage.setItem('pagelens-theme', state.theme); } catch { /* session only */ }
+    render();
+  }, { icon: state.theme === 'dark' ? 'sun' : 'moon', className: 'icon-btn', title: `Switch to ${state.theme === 'dark' ? 'light' : 'dark'} theme` }));
+  // Refresh is useful only while a successful scan has activeTab access.
+  // It cannot grant permission on a newly opened or navigated tab.
+  if (state.scan && !state.loading) {
+    topActions.append(button('', () => void refresh(), { icon: 'refresh', className: 'icon-btn refresh-btn', title: 'Refresh current scan' }));
+  }
   top.append(brand, topActions);
   const nav = make('nav', 'module-nav');
   nav.setAttribute('aria-label', 'Inspector navigation');
@@ -303,6 +306,7 @@ function render(): void {
     moduleSelect.append(option);
   }
   moduleSelect.value = state.section;
+  moduleSelect.disabled = !state.scan;
   moduleSelect.addEventListener('change', () => changeTab(moduleSelect.value as Section));
   const selectWrap = make('div', 'module-select-wrap');
   selectWrap.append(icon(tabs.find((entry) => entry.section === state.section)?.icon ?? 'overview', 17), moduleSelect);
@@ -316,8 +320,8 @@ function render(): void {
   main.dataset.section = state.section; main.setAttribute('role', 'tabpanel');
   main.setAttribute('aria-labelledby', `tab-${state.section}`);
   if (state.loading) main.append(renderLoading());
-  else if (state.error) main.append(renderError(state.error));
-  else if (!state.scan) main.append(renderWelcome());
+  else if (state.error) main.append(renderActivationHint(state.error));
+  else if (!state.scan) main.append(renderActivationHint());
   else {
     const scan = state.scan;
     switch (state.section) {
@@ -338,17 +342,21 @@ function renderLoading(): HTMLElement {
   wrap.append(make('div', 'spinner'), make('h2', '', 'Inspecting webpage'), make('p', '', 'Collecting live document metadata and DOM elements. No data leaves your device.'));
   return wrap;
 }
-function renderError(message: string): HTMLElement {
-  const wrap = make('div', 'center-state error-state');
-  wrap.append(icon('alert', 29), make('h2', '', 'Unable to inspect this page'), make('p', '', message));
-  wrap.append(button('Try again', () => void refresh(), { icon: 'refresh', className: 'btn btn-primary' }));
-  return wrap;
-}
-function renderWelcome(): HTMLElement {
-  const wrap = make('div', 'center-state');
-  wrap.append(icon('search', 30), make('h2', '', 'Ready to inspect'),
-    make('p', '', 'Open a website and click the PageLens toolbar icon. It scans that tab immediately, without asking for access to every site.'),
-    button('Refresh current page', () => void refresh(), { icon: 'refresh', className: 'btn btn-secondary' }));
+/** No scan/permission prompts: an in-panel button cannot activate activeTab. */
+function renderActivationHint(error?: string): HTMLElement {
+  const unsupportedPage = !!error && /HTTP\(S\)|Chrome internal|extension pages|Web Store|not supported/i.test(error);
+  const wrap = make('div', 'activation-hint');
+  wrap.setAttribute('role', 'status');
+  wrap.append(make('p', 'activation-primary', unsupportedPage
+    ? 'This browser page cannot be inspected.'
+    : error && !/toolbar icon|temporary access/i.test(error)
+      ? 'PageLens could not inspect this page.'
+      : 'Click the PageLens icon in Chrome’s toolbar to inspect this page.'));
+  wrap.append(make('p', 'activation-secondary', unsupportedPage
+    ? 'Open a regular website, then click the PageLens icon.'
+    : error && !/toolbar icon|temporary access/i.test(error)
+      ? 'Click the PageLens toolbar icon again to retry.'
+      : 'Click it again after opening or switching to another tab.'));
   return wrap;
 }
 function technicalLocation(locator: string | null): HTMLElement | null {

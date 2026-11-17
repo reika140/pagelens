@@ -32,28 +32,29 @@ def compiled_test_bundle():
 ADAPTER=r'''
 // Test adapter, not a privileged browser extension: verify compiled UI and
 // action-scan handoff with real DOM extraction from an HTML fixture.
-window.__mockAction = { granted: true, forbidden: false, blocked: false, url: 'https://fixture.example.test/complete' };
+window.__mockAction = { granted: true, forbidden: false, blocked: false, tabId: 19, url: 'https://fixture.example.test/complete' };
 window.__mockTabActivated = null;
 window.__mockTabUpdated = null;
 window.__mockMessageListener = null;
 window.chrome = {
   tabs: {
-    query: async () => [{id:19,url:window.__mockAction.url}],
+    query: async () => [{id:window.__mockAction.tabId,url:window.__mockAction.url}],
     onActivated: {addListener:(fn)=>{window.__mockTabActivated=fn;}},
     onUpdated: {addListener:(fn)=>{window.__mockTabUpdated=fn;}},
   },
   runtime: {
     onMessage: {addListener:(fn)=>{window.__mockMessageListener=fn;}},
     sendMessage: async (message) => {
-      if (message.type !== 'pagelens:get-action-scan' || !window.__mockAction.granted) return null;
-      if (window.__mockAction.forbidden) return {ok:false,tabId:19,error:'Cannot access contents of the page.'};
+      if (message.type !== 'pagelens:get-action-scan' || !window.__mockAction.granted || message.tabId !== window.__mockAction.tabId) return null;
+      if (!/^https?:/i.test(window.__mockAction.url)) return {ok:false,tabId:message.tabId,error:'Open a regular HTTP(S) page to inspect it.'};
+      if (window.__mockAction.forbidden) return {ok:false,tabId:message.tabId,error:'Cannot access contents of the page.'};
       const docWindow=document.getElementById('fixture').contentWindow;
       const snapshot=docWindow.eval('('+extractPageSnapshot.toString()+')()');
       // srcdoc has an about:srcdoc URL. Assign the fixture's intended HTTPS
       // origin so link classification mimics a real navigated webpage.
       snapshot.url=window.__mockAction.url;
       delete snapshot.linkTypeCounts; // Recompute kinds from the fixture's real hrefs.
-      return {ok:true,tabId:19,snapshot};
+      return {ok:true,tabId:message.tabId,snapshot};
     },
   },
   scripting: {
@@ -289,25 +290,51 @@ def main():
             assert page.evaluate('window.__pagelens_pwned') is None
             print('PASS UI sanitization: page-owned HTML-looking metadata remains text')
 
-            # Switching tabs never grants site access or starts a new scan.
-            page.evaluate('window.__mockAction.granted=false; window.__mockAction.blocked=true; window.__mockTabActivated({tabId:20,windowId:1})')
-            page.get_by_role('heading',name='Ready to inspect').wait_for(timeout=10000)
+            # Navigating the same tab revokes the old scan. A panel-side
+            # retry cannot grant activeTab, so show a short, actionable hint.
+            page.evaluate('window.__mockAction.granted=false;window.__mockAction.blocked=true;window.__mockAction.url="https://other.example.test/";window.__mockTabUpdated(19,{status:"loading",url:window.__mockAction.url},{active:true})')
+            hint=page.locator('.activation-hint')
+            hint.wait_for(timeout=10000)
+            assert hint.locator('p').count()==2
+            assert 'Click the PageLens icon in Chrome' in hint.inner_text()
+            assert page.get_by_role('heading',name='Unable to inspect this page').count()==0
+            assert page.get_by_role('button',name='Try again').count()==0
+            assert page.get_by_role('button',name='Refresh current page').count()==0
+            assert page.get_by_title('Refresh current scan').count()==0
+            assert page.get_by_label('Choose inspector').is_disabled()
             assert page.locator('.module-tile').count()==0
-            print('PASS minimal permission: tab switch clears results without scanning or asking for host access')
-            # Without a toolbar gesture, manually refreshing cannot grant activeTab.
-            page.get_by_title('Refresh current scan').click()
-            page.get_by_role('heading',name='Unable to inspect this page').wait_for(timeout=10000)
-            assert page.get_by_text('Click the PageLens toolbar icon',exact=False).count()>=1
-            assert page.get_by_text('Allow access to this website').count()==0
-            print('PASS minimal permission: denied scan explains how to activate the toolbar')
-            # A toolbar click grants activeTab, and a background notification
-            # hands off its live DOM result without any permissions.request().
-            page.evaluate('window.__mockAction.granted=true;window.__mockAction.blocked=false;window.__mockMessageListener({type:"pagelens:action-scan-ready",tabId:19},null,()=>{})')
+            page.get_by_title('Switch to light theme').click()
+            page.screenshot(path=str(ROOT / 'docs/screenshots/activation-hint-fixture-preview.png'), full_page=True)
+            page.get_by_title('Switch to dark theme').click()
+            print('PASS same-tab navigation: compact two-line hint and no ineffective retry controls')
+
+            # Switching to a different tab uses the same quiet guidance.
+            page.evaluate('window.__mockAction.tabId=20;window.__mockAction.url="https://another.example.test/";window.__mockTabActivated({tabId:20,windowId:1})')
+            page.locator('.activation-hint').wait_for(timeout=10000)
+            assert page.locator('.activation-hint p').count()==2
+            assert page.get_by_title('Refresh current scan').count()==0
+            assert page.get_by_label('Choose inspector').is_disabled()
+            print('PASS different-tab activation: no scan, no ineffective controls')
+
+            # A toolbar click grants activeTab and the worker sends a new
+            # result to the existing Side Panel without permissions.request().
+            page.evaluate('window.__mockAction.granted=true;window.__mockAction.blocked=false;window.__mockMessageListener({type:"pagelens:action-scan-ready",tabId:20},null,()=>{})')
             page.get_by_text(malicious,exact=True).wait_for(timeout=10000)
-            print('PASS toolbar handoff: automatically renders the scan after action activation')
-            page.evaluate('window.__mockAction.forbidden=true;window.__mockMessageListener({type:"pagelens:action-scan-ready",tabId:19},null,()=>{})')
-            page.get_by_role('heading',name='Unable to inspect this page').wait_for(timeout=10000)
-            print('PASS restricted pages: Chrome injection denial stays recoverable')
+            assert page.get_by_title('Refresh current scan').count()==1
+            assert page.get_by_label('Choose inspector').is_enabled()
+            assert page.get_by_text('another.example.test').count()>0
+            print('PASS toolbar handoff: new-tab scan restores inspector and permitted Refresh')
+
+            # Permission-restricted and unsupported pages also show no button.
+            page.evaluate('window.__mockAction.forbidden=true;window.__mockMessageListener({type:"pagelens:action-scan-ready",tabId:20},null,()=>{})')
+            page.locator('.activation-hint').wait_for(timeout=10000)
+            assert page.get_by_role('button',name='Try again').count()==0
+            assert page.get_by_title('Refresh current scan').count()==0
+            page.evaluate('window.__mockAction.url="chrome://extensions";window.__mockMessageListener({type:"pagelens:action-scan-ready",tabId:20},null,()=>{})')
+            page.get_by_text('This browser page cannot be inspected.',exact=True).wait_for(timeout=10000)
+            assert page.locator('.activation-hint p').count()==2
+            assert page.get_by_title('Refresh current scan').count()==0
+            print('PASS restricted pages: short guidance instead of nonfunctional controls')
             if errors: raise AssertionError('Page runtime errors: '+repr(errors))
             print('PASS panel UI smoke: no unhandled JavaScript errors')
         finally: browser.close()

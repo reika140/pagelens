@@ -15,7 +15,7 @@ assert(!manifest.content_scripts,'Unexpected persistent content scripts');
 assert(!manifest.host_permissions?.length,'Host access must be temporary via activeTab only');
 assert(!manifest.optional_host_permissions,'Unexpected runtime permission prompts');
 assert(manifest.content_security_policy.extension_pages === "script-src 'self'; object-src 'self'",'Unexpected CSP');
-assert(manifest.version === '1.0.1','Expected the current maintenance release version');
+assert(manifest.version === '1.0.2','Expected the current maintenance release version');
 const license = await readFile(join(dist, 'LICENSE'), 'utf8');
 assert(license.includes('Copyright (c) 2026 reika140'), 'Release missing owner attribution');
 const files = [manifest.background.service_worker,manifest.side_panel.default_path,

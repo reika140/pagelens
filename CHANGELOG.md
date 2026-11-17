@@ -3,6 +3,14 @@
 PageLens follows [Semantic Versioning](https://semver.org/) and
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.2] - 2026-11-17
+
+### Fixed
+
+- Replaced confusing idle and permission-error screens with a two-line toolbar instruction.
+- Removed ineffective Retry/Refresh controls when no scan is active.
+- Cleared outdated inspection UI after a tab switch or navigation.
+
 ## [1.0.1] - 2026-11-17
 
 ### Changed

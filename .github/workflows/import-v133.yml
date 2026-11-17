@@ -82,14 +82,17 @@ jobs:
           }
           const tracked = execFileSync('git', ['ls-files','-z'], {encoding:'utf8'}).split('\0').filter(Boolean);
           for (const name of tracked) {
+            // The GitHub Actions token cannot modify workflow definitions.
+            // The GitHub connector updates those files separately after import.
+            if (name.startsWith('.github/workflows/')) continue;
             if (!files.has(name) && fs.existsSync(name)) fs.rmSync(name, {force:true});
           }
           for (const [name, data] of files) {
+            if (name.startsWith('.github/workflows/')) continue;
             fs.mkdirSync(path.dirname(name), {recursive:true});
             fs.writeFileSync(name, data);
           }
           fs.rmSync(workspace, {recursive:true,force:true});
-          fs.rmSync('.github/workflows/import-v133.yml',{force:true});
           const screenshots = Array.from(files.keys()).filter(n => n.startsWith('docs/screenshots/') && n.endsWith('.png'));
           console.log('Verified and imported', files.size, 'project files; screenshots:', screenshots.length);
           NODE

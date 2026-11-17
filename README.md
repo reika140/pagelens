@@ -11,13 +11,6 @@ entirely on your device: no account, server, analytics or arbitrary SEO score.
 > verified. Real Chrome installation and the final Chrome Web Store submission
 > still require acceptance testing.
 
-![PageLens v1.3.3 popup Overview](docs/screenshots/overview-fixture-preview.png)
-
-![Google organic rank SVG overlays (local Chromium fixture)](docs/screenshots/google-serp-svg-organic-fixture-preview.png)
-
-*Real compiled PageLens UI using a local HTML test fixture. Not a screenshot
-from an installed Chrome extension.*
-
 ## Features
 
 | Inspector | Features |

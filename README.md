@@ -8,9 +8,28 @@ It can also label organic results on Google Search, so the first result is easy 
 
 **Chrome 116+ · Manifest V3 · MIT · [Build status](https://github.com/reika140/pagelens/actions/workflows/ci.yml)**
 
-![PageLens popup showing a page overview](docs/screenshots/overview-fixture-preview.png)
+## In action
 
-*Preview generated from the compiled extension using an English test page. Chrome Web Store screenshots will be captured from an installed extension.*
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/screenshots/real/pagelens-headings-shopify.webp" width="100%" alt="PageLens displaying the heading hierarchy of Shopify's ecommerce guide">
+      <p align="center"><sub>Explore heading structure on Shopify</sub></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/screenshots/real/pagelens-overview-webdev.webp" width="100%" alt="PageLens Overview inspecting the headings and sections guide on web.dev">
+      <p align="center"><sub>Inspect page details on web.dev</sub></p>
+    </td>
+  </tr>
+</table>
+
+<details>
+  <summary>See organic numbering on Google Search</summary>
+  <p><img src="docs/screenshots/real/pagelens-organic-ranking-google.webp" width="100%" alt="PageLens displaying organic result numbers alongside a Google Search page with its dark popup open"></p>
+  <p><sub>Rank labels reflect the results shown in this browser session and may differ across users and searches.</sub></p>
+</details>
+
+*Screenshots captured in Chrome on public websites. The featured sites are examples, not endorsements.*
 
 ## What you can do
 

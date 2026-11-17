@@ -74,7 +74,5 @@ jobs:
             docs/screenshots/google-serp-popup-fixture-preview.png
             docs/screenshots/google-serp-organic-fixture-preview.png
             docs/screenshots/google-auto-organic-first-page-fixture.png
-            docs/screenshots/google-serp-ai-interleaved-fixture-preview.png
             docs/screenshots/google-serp-svg-organic-fixture-preview.png
             docs/screenshots/google-serp-svg-css-hostile-preview.png
-            docs/screenshots/vector-overlay-fixture.png

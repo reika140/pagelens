@@ -11,6 +11,10 @@ entirely on your device: no account, server, analytics or arbitrary SEO score.
 > verified. Real Chrome installation and the final Chrome Web Store submission
 > still require acceptance testing.
 
+![PageLens popup interface — English-only test preview](docs/screenshots/overview-fixture-preview.png)
+
+*UI preview from compiled PageLens running against a public test fixture. Not a screenshot of an installed Chrome extension.*
+
 ## Features
 
 | Inspector | Features |

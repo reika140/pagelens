@@ -13,7 +13,7 @@ __pycache__/
 releases/
 .coverage/
 
-# Browser-generated fixture captures (maintained README preview is .webp)
+# Browser-generated fixture captures (committed README images are versioned PNGs)
 docs/screenshots/*-fixture-preview.png
 
 # Local coordination notes are not part of the public product.

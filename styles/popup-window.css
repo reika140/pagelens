@@ -1,0 +1,39 @@
+/* Copyright (c) 2026 reika140. SPDX-License-Identifier: MIT. */
+/*
+ * Chrome action popups are auto-sized from their root document's intrinsic
+ * dimensions. Do not use vw/vh, percentage-based maximum sizes, or minimums
+ * derived from viewport units: the initial auto-size viewport can be 25x25.
+ * Explicit pixel dimensions allow Chrome to measure a 448x568 popup.
+ */
+html {
+  box-sizing: border-box;
+  width: 448px;
+  min-width: 448px;
+  height: 568px;
+  min-height: 568px;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+body {
+  box-sizing: border-box;
+  width: 448px;
+  min-width: 448px;
+  height: 568px;
+  min-height: 568px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+#app {
+  box-sizing: border-box;
+  width: 448px;
+  height: 568px;
+  min-height: 0;
+  overflow: hidden;
+}
+.main-content { overscroll-behavior-y: contain; }
+/* The popup can briefly show a hint for restricted browser pages. */
+.activation-hint { margin-top: 60px; }

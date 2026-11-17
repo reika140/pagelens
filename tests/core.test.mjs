@@ -177,18 +177,6 @@ test('oversized JSON-LD has not been syntax-validated and is not labelled invali
 });
 
 import { isScriptAccessDenied } from '../dist/js/extension/permissions.js';
-import { ACTION_SESSION_TTL_MS, isRecentActionScan, isActionScanReply } from '../dist/js/extension/action-session.js';
-test('toolbar scan handoff expires quickly and validates result for the active tab', () => {
-  assert.equal(isRecentActionScan(1000,1000),true);
-  assert.equal(isRecentActionScan(1000,1000+ACTION_SESSION_TTL_MS),true);
-  assert.equal(isRecentActionScan(1000,1001+ACTION_SESSION_TTL_MS),false);
-  assert.equal(isRecentActionScan(1000,999),false);
-  assert.equal(isActionScanReply({ok:true,tabId:31,snapshot:{url:'https://example.com/'}},31),true);
-  assert.equal(isActionScanReply({ok:false,tabId:31,error:'No access'},31),true);
-  assert.equal(isActionScanReply({ok:true,tabId:32,snapshot:{url:'https://example.com/'}},31),false);
-  assert.equal(isActionScanReply({ok:true,tabId:31,snapshot:{}},31),false);
-  assert.equal(isActionScanReply(null,31),false);
-});
 test('Chrome scripting host-access errors are distinguished from generic scan failures', () => {
   assert.equal(isScriptAccessDenied(new Error('Cannot access contents of the page. Extension manifest must request permission')), true);
   assert.equal(isScriptAccessDenied(new Error('Missing host permission for the tab')), true);

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Playwright browser tests for actual DOM extraction/highlight code (no invented scan data).
+"""Playwright browser tests for actual DOM extraction (no invented scan data).
 
 This suite uses about:blank + set_content so it can execute in restricted CI
 browsers with URL navigation disabled. It does not claim to test extension
-installation or the Chrome side panel toolbar flow.
+installation or the Chrome action popup flow.
 """
 from pathlib import Path
 import os
@@ -13,17 +13,12 @@ ROOT = Path(__file__).resolve().parent.parent
 COMPILED = (ROOT / 'dist/js/core/extract.js').read_text(encoding='utf8')
 EXTRACTOR = COMPILED.replace('export function extractPageSnapshot()', 'function extractPageSnapshot()', 1)
 EXTRACTOR += '\nwindow.__pageLensExtract = extractPageSnapshot;'
-LOCATE = (ROOT / 'dist/js/extension/locate.js').read_text(encoding='utf8')
-START = LOCATE.index('export function highlightInPage(')
-END = LOCATE.index('\nexport async function highlightTab', START)
-HIGHLIGHT = LOCATE[START:END].replace('export function highlightInPage(', 'function highlightInPage(', 1)
-HIGHLIGHT += '\nwindow.__pageLensHighlight = highlightInPage;'
 
 
 def verify_complete(page):
     html = (ROOT / 'tests/fixtures/complete.html').read_text(encoding='utf8')
     page.set_content(html)
-    page.add_script_tag(content=EXTRACTOR + '\n' + HIGHLIGHT)
+    page.add_script_tag(content=EXTRACTOR)
     scan = page.evaluate('window.__pageLensExtract()')
     assert scan['counts'] == {'headings': 6, 'images': 5, 'links': 7, 'jsonLd': 1}, scan['counts']
     assert scan['title'].startswith('PageLens Test')
@@ -45,12 +40,6 @@ def verify_complete(page):
     for section in ['headings','images','links','jsonLd','descriptions','canonicals']:
         for item in scan[section]:
             assert page.evaluate('(sel) => !!document.querySelector(sel)',item['locator']), (section,item['locator'])
-    heading_selector = scan['headings'][0]['locator']
-    response = page.evaluate('(selector) => window.__pageLensHighlight(selector)', heading_selector)
-    assert response['ok'] is True
-    assert page.locator('#pagelens-target-overlay').count() == 1
-    response = page.evaluate('window.__pageLensHighlight(".not-present")')
-    assert response['ok'] is False
     return scan
 
 
@@ -91,7 +80,7 @@ def main():
         try:
             page = browser.new_page(viewport={'width': 420,'height': 780})
             complete = verify_complete(page)
-            print(f"PASS complete DOM fixture: {complete['counts']}; selectors and highlight verified")
+            print(f"PASS complete DOM fixture: {complete['counts']}; selectors verified")
             invalid = verify_invalid(page)
             print(f"PASS missing/malformed DOM fixture: {invalid['counts']}")
             duplicate = verify_duplicate(page)

@@ -11,7 +11,7 @@ permissions. The project intentionally avoids arbitrary SEO scores.
 3. Add a behavioral test for new or changed rule logic; use or extend the
    HTML fixtures for DOM extraction changes.
 4. Run Playwright DOM/UI smoke tests if you changed extraction, highlighting or
-   visual interactions (`python tests/browser_e2e.py` and `python tests/panel_smoke.py`).
+   visual interactions (`python tests/browser_e2e.py` and `python tests/popup_smoke.py`).
 5. Update English documentation and the changelog when changing user behavior.
 6. Submit a pull request with motivation, screenshots for UI changes, test
    results and any new permissions / privacy implications.

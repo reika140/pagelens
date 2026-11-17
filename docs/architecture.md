@@ -1,89 +1,99 @@
-# Architecture
+# PageLens architecture (v1.3.3)
 
-**Version:** 1.0.0  
-**Maintainer:** [reika140](https://github.com/reika140)
+## Browser surfaces
 
-## Runtime flow
+PageLens uses a Chrome Manifest V3 popup for on-demand inspection and a
+narrowly scoped declarative content script for Google organic numbering.
+There is no background service worker or Side Panel.
+
+### On-demand website inspection
 
 ```text
-User clicks PageLens toolbar icon
-    |
-    v
-chrome.action.onClicked (MV3 service worker)
-    |--- chrome.sidePanel.open()
-    |--- chrome.scripting.executeScript(extractPageSnapshot)
-    |--- Keep a short-lived, tab-scoped result in memory
-    v
-Side Panel receives the action scan
-    |--- Normalize snapshot and classify elements
-    |--- Evaluate findings with qualified evidence
-    |--- Render Overview and inspector navigation
-    |--- User may highlight, copy or export filtered lists
+Click the PageLens toolbar icon
+    -> Chrome opens popup.html and grants temporary activeTab access
+    -> chrome.tabs.query identifies the active tab
+    -> chrome.scripting.executeScript runs the DOM extractor once
+    -> normalize data and evaluate evidence-based findings
+    -> display six inspectors with Copy and filtered CSV controls
 ```
 
-Only the toolbar action generates a new `activeTab` grant. An ordinary Side
-Panel button does not provide the browser gesture needed to access a new site.
-The Side Panel's Refresh action works only while the temporary grant still
-applies. Changing active tabs clears old scan results; navigating invalidates
-the corresponding service-worker handoff.
+### Automatic Google first-page numbering
 
-## Functional modules
+```text
+Open a Google Search page (google.com or google.com.vn)
+    -> Chrome injects js/extension/google-serp-content.js at document_idle
+    -> the script reads the stored On/Off setting (default: On)
+    -> confirm standard page-one Web results URL
+    -> classify visible organic result cards conservatively
+    -> number by visual top-to-bottom order, not arbitrary DOM order
+    -> observe local result-card updates while enabled; renumber as needed
 
-| Module | Implementation | Responsibility |
-| --- | --- | --- |
-| Extraction | `src/core/extract.ts` | Safe top-level DOM snapshot; no network operations |
-| Normalization | `src/core/normalize.ts` | Heading hierarchy, image source/alt states, link classification, JSON-LD parsing |
-| Rule engine | `src/core/rules.ts` | Errors, warnings and qualified information observations |
-| Report tools | `src/core/export.ts` | Reusable Markdown/CSV serializers and heading copy format |
-| Communication | `src/extension/background.ts`, `action-session.ts` | Toolbar action, scan handoff and navigation invalidation |
-| Highlighting | `src/extension/locate.ts` | Revalidate active tab and briefly highlight selected DOM element |
-| Side Panel | `src/panel/main.ts` | Inspector selector, finding drill-down, filters, theme and contextual actions |
+Switch Off in the popup
+    -> chrome.storage.local saves the preference
+    -> existing Google content scripts receive storage.onChanged
+    -> number labels are removed and DOM observers stop
+```
 
-The Side Panel builds safe DOM nodes with `textContent`, rather than inserting
-site-origin content as HTML. Search/filter values and scroll positions are kept
-per module in volatile panel memory. A finding with a valid locator can focus a
-matching heading, image, internal/external link or JSON-LD block. Special or
-invalid anchors intentionally remain outside the visible Links lists; their
-findings retain evidence and page highlight functionality.
+The content script is built from strict TypeScript modules `organic-rank.ts`
+and `serp-auto.ts`. The build script bundles the compiled code into a **classic
+content script** without importing JavaScript modules at runtime. Both popup
+and content script use the same classification function; no duplicate ranking
+heuristic or remote service is involved.
 
-## Data and security boundaries
+## Modules
 
-- Manifest V3, Chrome 116 minimum, exact permissions: `activeTab`, `scripting`,
-  `sidePanel`. No permanent host access or extension `tabs` permission.
-- One-shot extraction reads the active document's light DOM. Cross-origin
-  frames and closed shadow roots are out of scope.
-- Page-derived values are untrusted: never used as executable HTML or remote
-  code. JSON-LD is parsed as data, not executed.
-- No user-content network transmission, external analytics or dynamic code.
-- Default resource limits cap displayed collections and oversized JSON-LD
-  parsing; complete high-level counts include truncation notices.
-- CSV export includes UTF-8 BOM, quote/newline escaping and mitigation of
-  spreadsheet formula injection.
-- On-page highlighting uses ephemeral DOM markers; rescanning or navigation
-  can invalidate selectors without breaking the Side Panel.
-- Empty image alt can be intentional; multiple H1 elements are not
-  categorically errors. Editorial title lengths are configurable heuristics.
-- JSON syntax validity is not Google Rich Results eligibility. Link type is
-  not an HTTP health or broken-link check.
+| Component | Responsibility |
+| --- | --- |
+| `src/core/extract.ts` | One-shot DOM snapshot |
+| `src/core/normalize.ts` | Typed metadata, headings, images, links, JSON-LD |
+| `src/core/rules.ts` | Evidence-based findings |
+| `src/core/export.ts` | Copy and escaped CSV/Markdown serializers |
+| `src/extension/locate.ts` | Popup's temporary activeTab extraction |
+| `src/extension/organic-rank.ts` | Self-contained Google organic classifier and rank labels |
+| `src/extension/serp-auto.ts` | Content-script startup, settings and page-local DOM observer |
+| `src/popup/main.ts` | Six inspectors and global On/Off switch |
 
-## Build and testing
+## Security and privacy
 
-Native strict TypeScript and zero runtime JS dependencies enable a small MV3
-bundle. Node's built-in test runner covers normalization, findings, exports and
-toolbar behavior. Playwright covers fixture DOM extraction and the compiled
-Side Panel with a Chrome API adapter. See `README.md` for exact commands.
+Permissions: `activeTab`, `scripting`, and `storage`. The `content_scripts`
+match patterns grant page access **only** on `google.com` and
+`google.com.vn`; other pages are only inspected after an explicit toolbar
+click. There are no broad host permissions, remote scripts, analytics,
+external network calls, background crawler or background service worker.
 
-The original WXT/React/Vitest proposal is not implemented; the codebase uses
-native DOM UI and Node tests. Chrome installation and toolbar-to-panel
-behavior still require an unrestricted desktop Chrome acceptance test.
+Organic results are annotated through a single dedicated
+`pagelens-organic-overlay` attached directly to the document root, outside
+Google's result cards. Labels are locally rendered as SVG paths derived from
+the bundled OFL-1.1 Be Vietnam Pro font, not from live HTML text. PageLens
+never changes the result card's `position`, `transform`, fonts or markup.
+Turning the setting Off or navigating away removes the whole overlay.
+The content script does not modify search links, submit forms, read cookies,
+make network requests or alter Google's actual result order.
 
-References: [Chrome activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab),
-[Side Panel API](https://developer.chrome.com/docs/extensions/reference/api/sidePanel),
-[Chrome scripting](https://developer.chrome.com/docs/extensions/reference/api/scripting).
+The popup uses `textContent` for page-owned strings, never executable HTML.
+The extractor limits oversized DOM collections. CSV export includes UTF-8
+and spreadsheet formula protection. JSON-LD parsing is bounded.
 
-## User interface font assets
+## Popup constraints
 
-Be Vietnam Pro Regular, Medium and SemiBold are distributed under OFL-1.1
-and are packaged in `dist/fonts/` for offline Side Panel rendering. The
-source and full license are maintained in `assets/fonts/`. No font service
-requests are made at runtime.
+The popup retains fixed 448 x 568 CSS-pixel intrinsic dimensions and a 54-pixel
+navigation rail. Its UI has six inspectors and does not highlight elements on
+the webpage. Chrome closes the popup when focus changes.
+
+## Verification scope
+
+- Strict TypeScript and no-runtime-dependency build.
+- DOM fixtures for metadata, headings and link/image classification.
+- Google Search fixtures covering AI Overview citations, sponsored links,
+  visual order, delayed results, Off/On changes and unsupported result types.
+- Playwright tests execute compiled PageLens code with Chrome API adapters.
+
+The environment cannot currently confirm actual installed-Chrome Google
+results. Verify that live Google variations display correct positions before
+publishing the release or uploading it to the Chrome Web Store.
+
+References:
+
+- https://developer.chrome.com/docs/extensions/reference/manifest/content-scripts
+- https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions
+- https://developer.chrome.com/docs/extensions/reference/api/storage

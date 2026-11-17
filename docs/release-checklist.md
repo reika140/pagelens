@@ -1,51 +1,45 @@
-# PageLens v1.0.2 release acceptance checklist
+# PageLens v1.3.3 release acceptance checklist
 
 Maintainer: [reika140](https://github.com/reika140)
 
-## Automated checks
+## Automated QA
 
-- [ ] `npm ci` in a clean networked environment, using `package-lock.json`.
-- [ ] `npm run check` (TypeScript, static audit, unit tests, build integrity).
-- [ ] `npm run test:browser` (real Chromium DOM extraction and highlights).
-- [ ] `npm run test:ui` (compiled panel, navigation, exports, themes).
-- [ ] Verify `npm run package` and ZIP SHA-256 checksums.
-- [ ] GitHub Actions pass on the final tagged commit.
+- [ ] Run `npm ci`, `npm run check`, `npm run test:browser`, `npm run test:ui`.
+- [ ] Run `npm run test:serp` and `npm run test:auto-serp`.
+- [ ] Verify the extension and source ZIPs and SHA-256 checksums.
+- [ ] Review extension permissions: `activeTab`, `scripting`, `storage`.
+- [ ] Verify declared content scripts match only Google .com and .com.vn hosts.
+- [ ] Confirm no remote code, unexpected network calls or sensitive fixtures.
 
-## Required real Chrome checks (not yet verified)
+## Real Chrome acceptance QA - mandatory
 
-- [ ] Clean Chrome 116+ desktop profile can load the unpacked ZIP with no
-      manifest or service-worker errors.
-- [ ] Toolbar click on normal HTTPS sites scans immediately and opens Side Panel.
-- [ ] Opening from Chrome's Side Panel selector alone shows clear guidance if
-      there is no temporary `activeTab` access.
-- [ ] A navigation to another origin does not reuse stale results; clicking
-      PageLens again starts a scan on the new site.
-- [ ] Inspector selector exposes six destinations and works at 320px width and
-      at 200% browser zoom.
-- [ ] Overview metric shortcuts navigate to the correct inspector.
-- [ ] An error/warning's **View item** action focuses a related real element.
-- [ ] Headings Copy respects search; Images and Links CSV match active filters.
-- [ ] Internal/External link tab navigation works with keyboard arrow keys.
-- [ ] Highlighting, Light/Dark modes, JSON-LD source view and missing/invalid
-      page states behave correctly.
-- [ ] No unexpected outbound extension requests; no remote code execution.
-- [ ] Inspect accessibility: keyboard focus, contrast, names and responsive
-      scrolling. No serious UI or security defects remain.
-- [ ] Capture real 1280×800 or 640×400 Chrome screenshots, and prepare a
-      440×280 promotional tile; keep fixture previews out of Store images.
+- [ ] Install the unpacked extension in a clean Chrome profile.
+- [ ] Accept/verify narrow Google site access after the update.
+- [ ] Google Search first page shows correct organic numbering without opening PageLens.
+- [ ] Verify the first two organic positions on queries including AI Overview,
+      Ads, sitelinks and People Also Ask. Compare visual order top to bottom.
+- [ ] Verify the first organic result starts at 1, not after AI citations.
+- [ ] Verify upright 1/2/3 on real Google Search (not mirrored or rotated),
+      including scrolling, zoom, and a Google result card rerender.
+- [ ] Verify the SVG labels appear once, remain aligned with result titles,
+      and disappear immediately when disabled.
+- [ ] Switch Off in the popup and confirm labels disappear on Google pages.
+- [ ] Reload Google while Off; labels must stay hidden.
+- [ ] Switch On, reload Google and verify labels return automatically.
+- [ ] Verify no numbering on Images/Shopping/News and search results page 2.
+- [ ] Verify switching search queries does not duplicate or leave stale badges.
+- [ ] Verify popup still scans ordinary sites, six inspectors and Copy/Export.
+- [ ] Verify popup intrinsic 448 x 568 sizing and keyboard accessibility.
+- [ ] Inspect privacy, data use and permission warnings in Chrome.
+- [ ] Capture real Chrome screenshots for Store submission.
 
-## Publication and ownership
+## Publication
 
-- [ ] Public GitHub repository `reika140/pagelens` exists and the owner confirms
-      the `LICENSE`, `AUTHORS.md` and CODEOWNERS attribution.
-- [ ] `docs/privacy.md` is reachable at a stable public HTTPS URL.
-- [ ] Publish `v1.0.2` Git tag and release assets only after Chrome QA.
-- [ ] Verify the project is not exposing secrets, private URLs or customer data.
-- [ ] Review current Chrome Web Store policies and listing content.
-- [ ] Fill the Store privacy practices form consistently with the policy.
-- [ ] Provide genuine screenshots, icon and detailed reviewer instructions.
-- [ ] Submit from a Chrome Web Store developer account with 2-Step Verification.
+- [ ] Review MIT, OFL, AUTHORS, CODEOWNERS and public ownership details.
+- [ ] Publish the approved source and privacy policy before Store submission.
+- [ ] Do not upload internal project notes or private customer/website data.
+- [ ] Publish the v1.3.3 GitHub Release only after acceptance QA.
+- [ ] Review current Chrome Web Store policies and privacy practices forms.
+- [ ] Submit the compiled extension ZIP, not the source ZIP.
 
-A successful local build alone does not imply successful Web Store review or
-production readiness. Keep publication blocked until the required real Chrome
-checks and public privacy-policy hosting are complete.
+Passing fixture tests does not prove success on a live Google Search page.

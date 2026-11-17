@@ -9,7 +9,6 @@ const patterns = [
   [/\binnerHTML\s*=/, 'untrusted HTML sinks'],
   [/\b(?:fetch|XMLHttpRequest|sendBeacon)\s*\(/, 'network transmission in extension source'],
   [/\bconsole\.log\s*\(/, 'debug logging'],
-  [/\bchrome\.storage\./, 'unexpected storage permission usage'],
 ];
 const violations = [];
 async function walk(dir) {

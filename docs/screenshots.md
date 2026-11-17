@@ -1,36 +1,29 @@
-# Screenshot preparation
+# Screenshot guidance
 
-**Important:** `docs/screenshots/*-fixture-preview.png` images are generated
-from compiled PageLens code and a local HTML fixture via Playwright. They show
-UI behavior but are **not real Chrome installation screenshots** and must not
-be submitted to the Chrome Web Store as genuine screenshots.
+Images in `docs/screenshots` are Playwright renders of local HTML fixtures
+using compiled PageLens code. They demonstrate real UI behavior and organic
+classification logic but **are not screenshots of an installed extension or
+live Google Search**. Do not submit them to Chrome Web Store as live captures.
 
-## Capture genuine screenshots
+## Recommended real Chrome screenshots
 
-1. Install the `1.0.0` extension ZIP on an unrestricted desktop Chrome profile
-   via `chrome://extensions` > Developer mode > Load unpacked.
-2. Open a public test website. Avoid private account data, sensitive URLs and
-   customer records.
-3. Click the PageLens toolbar icon. Confirm that the Side Panel scans the page.
-4. Capture the genuine Chrome browser and extension UI, showing the Overview,
-   Inspector selector, finding drill-down and the Metadata, Headings, Images,
-   Links and Structured Data inspectors where useful.
-5. Demonstrate native Copy and Export actions using real page results. Preserve
-   the actual appearance of the extension; do not fabricate browser chrome,
-   permission dialogs or scan data.
-6. Crop or resize genuine captures to the dimensions accepted by the Chrome
-   Web Store. Use original PNG/JPEG files.
-7. Keep approved shots separate from the `*-fixture-preview.png` files, such as
-   `01-overview-chrome.png` and `02-images-chrome.png`.
+1. Install the reviewed v1.3.3 extension in Chrome Desktop.
+2. Open a public webpage without private user or customer information.
+   Capture the popup Overview and, where useful, Headings/Images/Links.
+3. Open an ordinary Google Search page one with a visible organic result
+   beneath an AI Overview. Capture correct 1, 2, 3 organic numbering.
+4. Open the popup and capture the On/Off preference control.
+5. Show the effect of switching Off only when the screenshots represent real
+   behavior; never fabricate Google result markup or review dialogs.
+6. Use the current Chrome Web Store screenshot sizes and keep originals.
 
-Screenshots must match the exact tagged source/extension build and current
-Chrome Web Store image requirements.
+The bundled Be Vietnam Pro font is local. The fixture screenshots here must
+be clearly described as test previews rather than production screenshots.
 
-The Chromium UI fixture now uses the exact bundled Be Vietnam Pro font files; previews do not rely on remote font services.
+## SVG organic numeral regression previews
 
-## README previews (v1.0.2)
-
-The README links to versioned overview and activation-hint PNG screenshots,
-rendered by Playwright using compiled PageLens code and a local HTML
-fixture. They are not genuine installed-Chrome screenshots and must not
-be represented as Chrome Web Store screenshots.
+`google-serp-svg-organic-fixture-preview.png` shows the isolated vector glyphs
+on a compiled DOM fixture. `google-serp-svg-css-hostile-preview.png` is the same
+fixture after adding CSS that rotates/mirrors spans and changes writing mode.
+The unit tests compare cropped SVG badge PNG bytes to confirm the digits do
+not change. These previews are **not** live Google Search screenshots.

@@ -13,17 +13,38 @@ const result = spawnSync('tsc', ['-p', 'tsconfig.json'], { cwd: root, stdio: 'in
 if (result.error) throw result.error;
 if (result.status !== 0) process.exit(result.status ?? 1);
 await mkdir(join(dist, 'styles'), { recursive: true });
-await cp(join(root, 'styles/panel.css'), join(dist, 'styles/panel.css'));
-await cp(join(root, 'src/panel/index.html'), join(dist, 'panel.html'));
+await cp(join(root, 'styles/popup.css'), join(dist, 'styles/popup.css'));
+await cp(join(root, 'styles/inspector.css'), join(dist, 'styles/inspector.css'));
+await cp(join(root, 'styles/popup-window.css'), join(dist, 'styles/popup-window.css'));
+await cp(join(root, 'src/popup/index.html'), join(dist, 'popup.html'));
 await cp(join(root, 'manifest.json'), join(dist, 'manifest.json'));
 await cp(join(root, 'LICENSE'), join(dist, 'LICENSE'));
 await cp(join(root, 'assets/icons'), join(dist, 'icons'), { recursive: true });
 await cp(join(root, 'assets/fonts'), join(dist, 'fonts'), { recursive: true });
 const manifest = JSON.parse(await readFile(join(dist, 'manifest.json'), 'utf-8'));
-if (manifest.manifest_version !== 3 || manifest.side_panel?.default_path !== 'panel.html') throw new Error('Unexpected Chrome manifest configuration');
-const required = ['activeTab', 'scripting', 'sidePanel'];
+if (manifest.manifest_version !== 3 || manifest.action?.default_popup !== 'popup.html' || manifest.side_panel || manifest.background) throw new Error('Unexpected Chrome popup-only manifest configuration');
+const required = ['activeTab', 'scripting', 'storage'];
 if (JSON.stringify([...manifest.permissions].sort()) !== JSON.stringify(required.sort())) throw new Error('Unexpected permissions');
-if (manifest.content_scripts?.length) throw new Error('Unexpected persistent content scripts');
-if (manifest.host_permissions?.length) throw new Error('Unexpected persistent host permissions');
+const scripts = manifest.content_scripts ?? [];
+if (scripts.length !== 1 || scripts[0].js?.join(',') !== 'js/extension/google-serp-content.js' ||
+    scripts[0].run_at !== 'document_idle' || scripts[0].all_frames !== false) {
+  throw new Error('Expected one narrowly scoped Google-only content script');
+}
+const domains = ['https://www.google.com/*', 'https://google.com/*',
+  'https://www.google.com.vn/*', 'https://google.com.vn/*'];
+if (JSON.stringify(scripts[0].matches.slice().sort()) !== JSON.stringify(domains.sort())) {
+  throw new Error('Unexpected site access in the content script');
+}
+// Chrome MV3 declarative content scripts are classic scripts, not ES modules.
+// Bundle the two audited, TypeScript-compiled modules without a runtime library.
+const stripModuleSyntax = (code) => code.replace(/^import[^\n]*;\s*$/gm, '')
+  .replace(/^export\s+(?=(?:function|async function|const|class|let)\b)/gm, '');
+const rankCode = stripModuleSyntax(await readFile(join(dist, 'js/extension/organic-rank.js'), 'utf8'));
+const autoCode = stripModuleSyntax(await readFile(join(dist, 'js/extension/serp-auto.js'), 'utf8'));
+if (/^(?:import|export)\s/m.test(rankCode + autoCode)) throw new Error('Unbundled module syntax in Google content script');
+await writeFile(join(dist, 'js/extension/google-serp-content.js'),
+  '/* PageLens local Google SERP content script. Copyright (c) 2026 reika140. */\n' +
+  rankCode + '\n' + autoCode + '\n');
+if (manifest.host_permissions?.length) throw new Error('No broad host_permissions are required');
 if (manifest.optional_host_permissions) throw new Error('Unexpected runtime site permission flow');
 console.log(`Chrome MV3 extension built: ${dist}`);

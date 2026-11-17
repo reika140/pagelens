@@ -28,7 +28,7 @@ function absoluteResource(input: string, pageUrl: string): string {
   if (!input.trim()) return '';
   try {
     const url = new URL(input.trim(), pageUrl);
-    // Display the source as plain text. Never render page-controlled URLs as side-panel images.
+    // Display the source as plain text. Never render page-controlled URLs as popup images.
     return ['http:', 'https:', 'data:', 'blob:'].includes(url.protocol) ? url.href : '';
   } catch { return ''; }
 }

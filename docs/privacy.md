@@ -1,73 +1,81 @@
 # PageLens Privacy Policy
 
 **Effective date:** November 17, 2026  
-**Publisher / maintainer:** [reika140](https://github.com/reika140)  
-**Product:** PageLens — Website Inspector
+**Publisher:** [reika140](https://github.com/reika140)  
+**Product:** PageLens - Website Inspector
 
-## What PageLens accesses
+## What PageLens does
 
-When you click the PageLens toolbar icon, Chrome provides temporary access to
-that active tab. PageLens locally inspects its page URL, document title and
-metadata, heading elements, image attributes, link attributes and JSON-LD
-structured data. It also derives DOM locations used only for user-triggered
-highlighting. It does not intentionally inspect form field values, passwords,
-private browser history or other tabs in the background.
+PageLens has two distinct, local browser features:
 
-Websites can include sensitive information in URLs or metadata. Review any
-copied or exported output before distributing it to another person.
+1. **Website inspection:** When you click the PageLens toolbar icon, the popup
+   inspects the active HTTP(S) webpage's URL, metadata, heading elements, image
+   attributes, link attributes and JSON-LD structured data. It generates
+   findings and lets you copy or export selected information.
+2. **Automatic Google organic numbering:** When the setting is on (the default),
+   a small content script operates on Google Search results at `google.com` and
+   `google.com.vn`. On the first ordinary Web results page, it identifies
+   supported organic result links and inserts local numeric labels. It excludes
+   advertising and recognizable AI/rich-result modules. It may observe local
+   changes to Google Search result markup so numbers stay in order. It never
+   contacts Google separately or queries rankings from another service.
 
-## Why it accesses these values
+Automatic numbering runs **without opening the popup**. Use the **Automatic
+organic ranking numbers** On/Off switch in the popup to disable it. The choice
+is saved in the browser. The feature is not a live ranking tracker, cannot
+verify Google's internal result classification and might skip layouts it
+cannot confidently recognize.
 
-The data is used only to provide PageLens's visible single purpose: on-demand
-technical inspection of a webpage, evidence-based observations, navigation to
-relevant elements and user-requested exports.
+PageLens does not intentionally inspect form input values, passwords, or
+private browsing history. Search queries may appear in the Google Search URL
+and page DOM, but PageLens does not retain or transmit them to the publisher.
 
-## Storage, sharing and transmission
+## Local processing and retention
 
-- Scan data is processed locally by the extension and is not sent to the
-  developer, advertisers, analytics providers or any other server.
-- PageLens makes no background requests to fetch or validate website links.
-- The service worker may retain an in-memory scan for up to two minutes to
-  deliver it to the Side Panel. Entries are cleared on navigation or tab close.
-- Results displayed in the Side Panel reside in memory, not in an account or
-  remote database.
-- Light/Dark theme and optional editorial thresholds are saved only in
-  extension-local `localStorage`.
-- Copy and CSV export actions are initiated by you. Exported files remain in
-  locations controlled by your browser and operating system. PageLens does
-  not upload these files.
+- No login, cloud service, analytics SDK, advertising, telemetry or external
+  network requests are used by PageLens.
+- Popup scan data is processed in local memory and discarded when the popup
+  closes. Ranking numbers are DOM elements on the current Google results page
+  and disappear when that page is closed, changed or the feature is switched off.
+- The automatic ranking setting is stored using Chrome `storage.local`. The
+  light/dark theme and editorial heuristics remain in the popup's localStorage.
+- PageLens does not sell, upload or share inspected content, URLs, search
+  queries or exported files with the developer or third parties.
+- Copy and CSV export are user-initiated; export files are saved locally by
+  Chrome and can contain data from the inspected page.
 
-## Requested Chrome permissions
+## Chrome permissions and access
 
-| Permission | Reason |
+| Permission or site scope | Purpose |
 | --- | --- |
-| `activeTab` | Temporary access after clicking the toolbar icon |
-| `scripting` | Read the chosen page's DOM and briefly highlight selected elements |
-| `sidePanel` | Present the inspection interface next to the website |
+| `activeTab` | Temporarily inspect the active website after clicking the icon |
+| `scripting` | Run one-time, user-triggered DOM extraction in the selected tab |
+| `storage` | Remember the On/Off preference for automatic organic numbering |
+| Google content-script access | Automatically add and remove rank numbers on `google.com` and `google.com.vn` |
 
-PageLens does not request permanent access to all websites, `host_permissions`,
-`tabs`, `storage`, background site monitoring or a persistent content script.
-The browser may revoke its temporary access after a navigation to a different
-origin. Click the toolbar icon again to inspect the new site.
+The Google access is declared in `content_scripts.matches`. Chrome may display
+an access warning for those domains during installation or upgrade. It is
+restricted to those Google domains, not every website. The content script
+checks that the page is the first ordinary Web results page before numbering.
+Chrome may also allow you to manage site access under extension details.
 
-## User control and retention
+There is no `tabs` permission, broad `host_permissions`, Side Panel permission,
+persistent background service worker, or remote executable code. PageLens
+stays local-first and is not a full-site crawler.
 
-Close PageLens to remove its displayed results. Closing/restarting the browser
-also clears transient runtime state. You may clear theme/editorial preferences
-through Chrome's extension site-data controls. Remove exported files through
-your own file manager. You can uninstall PageLens at any time.
+## User controls
 
-## Children and third parties
+The automatic Google numbering preference can be switched on or off in the
+PageLens popup. Turning it off removes PageLens number labels on Google tabs
+where its content script is running. Users can also remove the extension,
+clear its site data in Chrome or delete any exported files manually.
 
-PageLens does not offer accounts, advertising or social features, and does not
-intentionally collect information about children. There are no third-party
-tracking SDKs or analytics services.
+Review exported URLs and page metadata before distributing them, as webpage
+content can contain personal information.
 
-## Questions and updates
+## Contact and changes
 
-For privacy questions, use the GitHub repository's Issues page once published:
-https://github.com/reika140/pagelens/issues. Do not include private webpage
-content, credentials or sensitive URLs in public issues.
-
-Material changes to data practices require an updated policy and appropriate
-user-facing disclosure before publication.
+Use [GitHub Issues](https://github.com/reika140/pagelens/issues) for questions
+or privacy concerns. Do not post private pages, account details, credentials
+or sensitive URLs in public issues. Any material changes to data practices
+will be reflected in this policy before publication.

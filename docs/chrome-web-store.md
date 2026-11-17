@@ -1,107 +1,106 @@
-# Chrome Web Store submission preparation
+# Chrome Web Store submission guide - PageLens v1.3.3
 
-**Product:** PageLens — Website Inspector  
-**Maintainer:** [reika140](https://github.com/reika140)  
-**Version:** 1.0.2 (release candidate)
-
-These details are proposed for the Chrome Web Store Developer Dashboard; they
-are not a claim that the extension has been submitted or approved.
+**Publisher:** [reika140](https://github.com/reika140)  
+**Status:** Beta; not submitted or approved.
 
 ## Single purpose
 
-User-triggered local technical inspection of the active webpage through a
-Chrome Side Panel, including metadata, headings, images, links and JSON-LD.
+Provide local, human-readable technical inspection of a webpage and optional
+organic position labels for the first ordinary Google Search results page.
+The website inspector is invoked from Chrome's toolbar popup. Organic numbering
+runs automatically on supported Google Search pages unless disabled.
 
-## Listing copy (English)
+## Suggested English listing
 
-**Name:** PageLens — Website Inspector  
-**Short description:** Inspect metadata, headings, images, links and JSON-LD in one click. Private, local-first and easy to navigate.
+**Name:** PageLens - Website Inspector
+
+**Short description:** Inspect website metadata, headings, images, links and JSON-LD. Optionally number Google organic search results.
 
 **Full description:**
 
-> PageLens is a lightweight, local-first website inspector for Chrome. Click
-> the extension icon to inspect the active webpage in the Side Panel.
+> PageLens is a compact, local-first website inspection extension for Chrome.
+> Open its toolbar popup to inspect metadata, headings, image alternative text,
+> internal and external links and JSON-LD. Navigate findings, copy headings or
+> JSON-LD and export filtered image and link lists as CSV.
 >
-> Browse metadata, H1–H6 headings, image alt text, internal/external links and
-> JSON-LD structured data. Overview provides evidence-based observations and
-> shortcuts that open the relevant inspector or page element. Highlight
-> elements on the website, copy heading hierarchies and export filtered image
-> and link CSV lists.
+> On supported Google Search pages, PageLens automatically labels the visible
+> organic results on page one, ignoring recognizable advertising and rich
+> modules. Turn this feature On or Off in the popup at any time.
 >
-> PageLens does not crawl sites, assign arbitrary SEO scores, fetch external
-> link health checks, require an account or transmit inspected content to an
-> analytics service. Website inspection starts only when you click the PageLens
-> toolbar icon.
+> PageLens does not require an account, crawl full sites, check backlinks,
+> query an external ranking provider, track browsing activity or transmit
+> scanned pages to developer servers. Results are generated locally.
 
-**Category:** Developer Tools (or closest available category)  
+**Category:** Developer Tools (or the nearest available category)  
 **Language:** English  
-**Website:** https://github.com/reika140/pagelens (verify live before submission)  
-**Support:** https://github.com/reika140/pagelens/issues (verify live before submission)  
-**Privacy policy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md (verify live before submission)
+**Website:** https://github.com/reika140/pagelens  
+**Support:** https://github.com/reika140/pagelens/issues  
+**Privacy policy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md
 
-Do not enter planned URLs in the Dashboard before they are publicly reachable.
+**Important:** The GitHub repository currently contains an earlier version.
+Publish the reviewed v1.3.3 source and update the public privacy policy before
+submitting the v1.3.3 Chrome package.
 
 ## Permission justifications
 
-| Permission | Reviewer explanation |
+| Permission or site pattern | Justification |
 | --- | --- |
-| `activeTab` | Temporarily reads only the tab whose PageLens toolbar button is clicked. |
-| `scripting` | Injects an on-demand, one-shot DOM extractor and user-requested highlight. |
-| `sidePanel` | Shows collected results beside the inspected webpage. |
+| `activeTab` | Read only the selected tab after the user opens the popup. |
+| `scripting` | Run an on-demand DOM extractor when inspecting the selected page. |
+| `storage` | Persist the On/Off preference for automatic Google organic numbering. |
+| `content_scripts.matches`: `google.com`, `google.com.vn` | Automatically label first-page organic Google Search results without needing a toolbar click. |
 
-No `host_permissions`, `tabs`, `storage`, persistent content scripts or
-optional broad site access are used. The bundled typeface is loaded only
-from extension files, never from a remote font service. Chrome may revoke `activeTab` when the
-user changes origins. This is intentional. No remotely hosted code is loaded.
+The Google host access is an intentional new permission compared with v1.3.0.
+The Chrome Web Store listing and privacy practices must disclose it. Chrome
+may display a site-access warning on installation or upgrade. There are no
+broad all-sites permissions, external analytics, remote code or background
+service workers. The feature observes only local result-page DOM updates and
+makes no additional network requests.
 
-## Privacy questionnaire guidance
+## Privacy questionnaire
 
-PageLens **accesses webpage content and URLs locally** as necessary to provide
-its functionality. Do not answer as though the extension cannot access page
-content. State accurately that scanned information is not sold, transferred
-or sent off-device. No account identifiers, payments, analytics IDs, user
-tracking or advertising SDKs are implemented. Local preference values only
-include theme and editorial thresholds.
+Do not claim that the extension never reads page content. The on-demand
+inspector reads metadata and page elements locally. On matching Google
+Search results, the content script reads result headings, links and page
+structure to place number labels. Scan data and Google queries are not
+uploaded, sold, or shared with the publisher. Only the preference and theme/
+heuristic settings are kept locally in Chrome.
 
-The Chrome Web Store's limited-use and disclosure policies require accurate,
-current descriptions of data use and a publicly accessible privacy policy
-when user data is handled. Review the developer form categories carefully and
-align them with `docs/privacy.md` and actual runtime behavior.
+## Media assets and QA
 
-## Store media and metadata
-
-- Icon: `assets/icons/icon-128.png` (128×128 PNG).
-- Capture at least one genuine installed-extension screenshot of the current
-  version at 1280×800 or 640×400, ideally 1280×800.
-- Prepare a 440×280 promotional tile to satisfy the current image guidance.
-- Do **not** submit fixture previews from `docs/screenshots/` as genuine Chrome
-  product screenshots. See `docs/screenshots.md`.
-- Verify name, developer display name, categories, descriptions and screenshots
-  all refer to PageLens without keyword stuffing or unsupported claims.
-- No subscriptions, advertisements, accounts or paid features are present.
-- 2-Step Verification is required for the developer account.
+- Product icon: `assets/icons/icon-128.png`.
+- Capture 1-5 screenshots of the actual extension installed in Chrome at
+  dimensions supported by the current Chrome Web Store Dashboard.
+- Consider demonstrating the PageLens popup and the numbered organic results
+  in separate genuine screenshots. Never use local HTML fixture screenshots as
+  if they came from a live Google result page.
+- Confirm correct labels on Google Search page one with AI Overview and
+  sponsored results, with and without the automatic switch enabled.
 
 ## Reviewer test instructions
 
-1. Open a normal public HTTPS website in Chrome.
-2. Click the PageLens toolbar icon (not only Chrome's Side Panel selector).
-3. Confirm the Side Panel opens and Overview loads a scan without a domain
-   permission prompt.
-4. Select each inspector; test Headings Copy, filtered Images/Links CSV,
-   contextual finding drill-down and temporary page highlighting.
-5. Try an unsupported Chrome internal page and verify a helpful message.
-6. No credentials, test accounts or server configuration are required.
+1. Install PageLens and open a normal public HTTPS webpage.
+2. Click the PageLens toolbar icon to inspect the page in a 448 x 568 popup.
+3. Test all six inspectors, Headings Copy, Images/Links Export CSV and JSON-LD.
+4. Without clicking the PageLens toolbar icon, open a Google Search on
+   `https://www.google.com/search?q=bigcommerce+to+shopify`.
+5. Verify organic numbers appear on page one. Ads, AI Overview citations,
+   People Also Ask and Top Stories should not receive numbers.
+6. Click PageLens and toggle **Automatic organic ranking numbers** Off;
+   number labels should disappear. Toggle On to restore them.
+7. Verify page-two and Images results are not numbered.
+8. No account, secret API key, backend configuration or payment is required.
 
 ## Release gates
 
-Before uploading the **extension ZIP** (not the source ZIP), complete
-[the acceptance checklist](release-checklist.md), publish the privacy policy,
-review current developer policies and make sure the Chrome profile has passed
-real installation testing.
+Run `npm run check`, `npm run test:browser`, `npm run test:ui`,
+`npm run test:serp`, `npm run test:auto-serp` and `npm run package`.
+A successful fixture test is not equivalent to real Google DOM QA. Publish only
+once Chrome installation and permission behavior have been verified.
 
 Official references:
 
-- [Chrome Web Store program policies](https://developer.chrome.com/docs/webstore/program-policies/policies)
-- [Listing requirements](https://developer.chrome.com/docs/webstore/program-policies/listing-requirements)
-- [Store listing documentation](https://developer.chrome.com/docs/webstore/cws-dashboard-listing)
-- [Chrome extension activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab)
+- https://developer.chrome.com/docs/webstore/program-policies/policies
+- https://developer.chrome.com/docs/webstore/program-policies/listing-requirements
+- https://developer.chrome.com/docs/extensions/reference/manifest/content-scripts
+- https://developer.chrome.com/docs/extensions/reference/api/storage

@@ -1,184 +1,82 @@
 # PageLens
 
-**Understand any webpage in one click.**
+**A clearer look at the page you're on.**
 
-PageLens is a local-first, open-source Chrome website inspector maintained by
-[reika140](https://github.com/reika140). Click the toolbar icon and PageLens
-opens a compact popup to inspect the current webpage. The inspection runs
-entirely on your device: no account, server, analytics or arbitrary SEO score.
+PageLens is a lightweight, open-source Chrome extension for inspecting the details behind a webpage. Open the toolbar popup to review metadata, heading structure, images, links, and JSON-LD without digging through DevTools.
 
-> **v1.3.3 - Automatic Google numbering beta.** Local compilation and automated browser fixtures are
-> verified. Real Chrome installation and the final Chrome Web Store submission
-> still require acceptance testing.
+It can also label organic results on Google Search, so the first result is easy to distinguish from ads and other search features.
 
-![PageLens popup interface — English-only test preview](docs/screenshots/overview-fixture-preview.png)
+**Chrome 116+ · Manifest V3 · MIT · [Build status](https://github.com/reika140/pagelens/actions/workflows/ci.yml)**
 
-*UI preview from compiled PageLens running against a public test fixture. Not a screenshot of an installed Chrome extension.*
+![PageLens popup showing a page overview](docs/screenshots/overview-fixture-preview.png)
 
-## Features
+*Preview generated from the compiled extension using an English test page. Chrome Web Store screenshots will be captured from an installed extension.*
 
-| Inspector | Features |
+## What you can do
+
+- **Understand a page at a glance.** See its title, description, canonical URL, robots directives, and relevant observations.
+- **Explore the structure.** Browse H1–H6 headings in order, check image alt attributes, and review internal and external links.
+- **Inspect structured data.** Read and copy formatted JSON-LD, including syntax errors and detected types.
+- **Copy or export useful details.** Copy headings or JSON-LD, and export filtered image and link lists to CSV.
+- **See organic positions on Google.** Automatically number recognized organic results on the first Google Search results page, with a simple On/Off switch in the popup.
+
+PageLens reports what it can observe. It does not assign an arbitrary SEO score, claim that every empty alt is an error, or treat unverified links as broken.
+
+## Get started
+
+PageLens is currently available as a **beta build**, not yet through the Chrome Web Store.
+
+1. Open the [latest successful GitHub Actions build](https://github.com/reika140/pagelens/actions/workflows/ci.yml) and download its extension ZIP from **Artifacts** (GitHub sign-in may be required).
+2. Extract the ZIP to a folder.
+3. Open `chrome://extensions`, enable **Developer mode**, and choose **Load unpacked**.
+4. Select the extracted folder containing `manifest.json`.
+5. Visit a webpage and click the **PageLens** icon in the Chrome toolbar.
+
+The popup scans the active tab when opened. Its six inspectors are available from the icon navigation on the left.
+
+### Organic numbering on Google
+
+On supported first-page Web searches at `google.com` and `google.com.vn`, PageLens can show organic position numbers without opening the popup. The feature is **on by default** and can be turned off under **Automatic organic ranking numbers**.
+
+The labels are based on the visible page, not a rank-tracking API. Ads, AI Overview citations, and recognizable search features are excluded where they can be identified reliably. Google changes its layouts frequently, so some results may not be recognized.
+
+## Privacy, without the fine print
+
+Page inspections run locally. PageLens has no account, analytics, or developer server, and it does not upload the pages or reports you inspect.
+
+| Access | Why it's needed |
 | --- | --- |
-| Overview | Document summary, evidence-based findings and inspector shortcuts |
-| Metadata | Title, description, canonical, robots, viewport, Open Graph, Twitter/X and hreflang |
-| Headings | H1–H6 hierarchy, skip/empty observations, Copy heading hierarchy |
-| Images | Alt missing/empty/present, image sources, lazy-loading data, search and filtered CSV |
-| Links | Internal and external links, search, accessible-name observations and filtered CSV |
-| Structured Data | JSON-LD syntax parsing, nested `@type`, formatted JSON and Copy |
+| `activeTab` | Inspect the page after you click the extension icon |
+| `scripting` | Read that page's DOM for the on-demand inspection |
+| `storage` | Remember whether organic numbering is On or Off |
+| Google Search page access | Display organic numbers automatically on supported Google domains |
 
-PageLens treats multiple H1 elements and empty image alt attributes as
-**context-dependent** rather than automatic SEO/accessibility errors. Title and
-description length recommendations are optional, configurable heuristics. It
-does not claim a link is broken without HTTP validation or that valid JSON-LD
-qualifies for Google's Rich Results.
+PageLens does **not** request access to every website. Its automatic content script is limited to the declared Google domains. See the [privacy policy](docs/privacy.md) for precise data-handling details.
 
-## Install on Chrome
+## Build it yourself
 
-**Chrome Desktop 116 or later.**
-
-1. Download and extract `pagelens-v1.3.3-chrome-extension.zip`.
-2. Open `chrome://extensions` and enable **Developer mode**.
-3. Click **Load unpacked** and select the extracted folder containing
-   `manifest.json` at its root.
-4. Open a normal HTTP(S) website and click the **PageLens toolbar icon**.
-5. PageLens immediately opens its **448 x 568 px popup** and scans the active
-   tab. Use the left icon rail to switch between the six inspectors.
-
-### Automatic Google organic numbering
-
-Organic numbers are **On by default** and appear on the first ordinary Web
-results page of Google Search at `google.com` or `google.com.vn` without
-opening the PageLens popup. Unlike popup scanning, this requires a narrowly
-scoped content script that Chrome may ask you to authorize during install or
-upgrade. No site-wide access outside the listed Google domains is required.
-
-The organic rank counter skips ads, AI Overview citations, People Also Ask and
-other recognizable rich modules; results are numbered in visible top-to-bottom
-order. This uses the page's HTML, not an external SERP rank API, and cannot
-promise accuracy on every Google layout. Do not interpret these labels as
-personalization-free or independently verified rankings.
-
-PageLens draws the numbers as **SVG vector outlines** in a dedicated root-level
-layer, separate from Google result cards. It does not inject text labels or
-change positioning styles inside Google's organic results. This avoids
-result-card font, mirroring and rotation rules affecting the numbers.
-
-In the popup, Overview has one **Automatic organic ranking numbers** On/Off
-switch. Its choice is stored locally and applies to subsequent Google searches
-without an icon click. Turning it Off also removes existing PageLens number
-labels from Google tabs where the content script is running.
-
-The popup closes when you click outside it, as Chrome popups normally do.
-Click the toolbar icon again to open a fresh scan of the currently active page.
-Results are held only for the lifetime of the open popup; search and scroll state are
-preserved while you switch inspectors within that popup.
-
-Export is intentionally contextual: Headings supports Copy, Images and Links
-support filtered CSV, and Structured Data supports Copy JSON. The long global
-export footer has been removed.
-
-### Appearance
-
-PageLens has a white-first Light theme with restrained sepia accents and a
-neutral Dark theme. The locally bundled Be Vietnam Pro font uses Regular,
-Medium and SemiBold weights. There are no externally hosted font requests.
-
-## Permissions and privacy
-
-```json
-"permissions": ["activeTab", "scripting", "storage"]
-```
-
-- `activeTab`: temporary access after a deliberate toolbar click.
-- `scripting`: one-shot DOM extraction of the active page.
-- `storage`: locally saves the automatic organic numbering On/Off preference.
-- `content_scripts.matches`: permits automatic numbering on `google.com` and
-  `google.com.vn` only. Chrome may display an access warning for these sites.
-
-There is **no** Side Panel permission, background service worker, broad
-`host_permissions`, `tabs` permission, remote code or analytics. PageLens inspects the active document locally. It
-does not collect form values or upload website content, URLs, JSON-LD or
-exported CSV files. Check exported content before sharing it publicly.
-
-Read the [privacy policy](docs/privacy.md) and [security policy](SECURITY.md).
-
-## Build from source
-
-Requirements: Node.js 20+, npm, TypeScript 5.8.3 (installed by `npm ci`),
-Python 3.10+ for packaging, and Playwright/Chromium for optional browser tests.
+Requires Node.js 20+ and npm.
 
 ```bash
+git clone https://github.com/reika140/pagelens.git
+cd pagelens
 npm ci
 npm run check
-npm run package
+npm run build
 ```
 
-For browser tests:
+Load the generated `dist/` directory in Chrome using **Load unpacked**. To create ZIP distributions, run `npm run package` (Python 3.10+ required).
 
-```bash
-python -m pip install playwright
-python -m playwright install chromium
-npm run test:browser
-npm run test:ui
-npm run test:serp
-npm run test:auto-serp
-```
+The code uses TypeScript, browser APIs, and no JavaScript runtime dependencies. For browser regression tests, see the [development documentation](docs/architecture.md) and [contribution guide](CONTRIBUTING.md).
 
-Build outputs:
+## Project status
 
-- `dist/` — ready-to-load unpacked popup extension
-- `releases/pagelens-v1.3.3-chrome-extension.zip` — ZIP for Chrome
-- `releases/pagelens-v1.3.3-source.zip` — public source archive
-- `releases/SHA256SUMS.txt` — SHA-256 checksums
+**v1.3.3 — Beta.** Automated unit, DOM, and popup tests run in [GitHub Actions](https://github.com/reika140/pagelens/actions). Chrome Web Store submission is still pending. Search result classification is best-effort because Google's HTML can change.
 
-The code uses strict TypeScript, native Manifest V3 APIs, CSS variables and
-zero JavaScript runtime dependencies. The only npm development dependency is
-TypeScript. Unit tests use Node's test runner; Chromium test fixtures inspect
-actual DOM data and exercise the compiled popup with a Chrome API adapter.
+If something looks wrong, [open an issue](https://github.com/reika140/pagelens/issues) with a public reproduction page and your Chrome version. Please remove sensitive information from screenshots.
 
-## Project structure
+## Contributing and license
 
-```text
-pagelens/
-├── .github/             # GitHub Actions, CODEOWNERS and templates
-├── assets/              # Icons and locally licensed font files
-├── docs/                # Architecture, privacy, QA and Store instructions
-├── scripts/             # Build, lint, verification and ZIP packaging
-├── src/
-│   ├── core/            # Extraction, parsing, rules and exports
-│   ├── extension/       # Temporary active-tab access and DOM extraction
-│   └── popup/           # Popup UI and navigation
-├── styles/              # Typography, inspector layout and popup sizing
-├── tests/               # Unit tests, HTML fixtures and Chromium smoke tests
-├── LICENSE
-└── manifest.json
-```
+Bug reports and focused pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md); security concerns are covered in [SECURITY.md](SECURITY.md).
 
-## Limitations and verification
-
-- Scans one active webpage at a time, not whole websites or cross-origin frames.
-- Doesn't crawl or request remote link health or Google Rich Results.
-- Google labels are derived from the current visible SERP DOM, not a remote
-  rank-tracking service; some layouts may not be identifiable.
-- Scans are transient. The popup closes when Chrome moves focus elsewhere.
-- Chrome blocks scripting of internal pages, the Web Store and some managed sites.
-- DOM results may be capped for very large pages, with a corresponding finding.
-- Real Chrome installation and toolbar-popup permission behavior must be
-  verified in an unrestricted desktop Chrome profile before release.
-- Use **genuine installed-Chrome screenshots** for Chrome Web Store submission;
-  fixture images in this repository are not Store listing screenshots.
-
-See the [release checklist](docs/release-checklist.md).
-
-## License and ownership
-
-Copyright © 2026 **[reika140](https://github.com/reika140)**.
-Released under the [MIT License](LICENSE). See [AUTHORS.md](AUTHORS.md),
-[CODEOWNERS](.github/CODEOWNERS), [CONTRIBUTING.md](CONTRIBUTING.md), and
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for attribution and licensing.
-
-### Popup sizing
-
-The action popup is fixed at 448 × 568 CSS pixels. The document does not
-use viewport-relative width/height constraints because Chrome auto-sizes the
-popup from its intrinsic content size.
+PageLens is maintained by [reika140](https://github.com/reika140) and released under the [MIT License](LICENSE). Bundled Be Vietnam Pro fonts are licensed separately under OFL-1.1; details are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

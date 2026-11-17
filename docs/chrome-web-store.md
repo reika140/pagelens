@@ -37,9 +37,7 @@ runs automatically on supported Google Search pages unless disabled.
 **Support:** https://github.com/reika140/pagelens/issues  
 **Privacy policy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md
 
-**Important:** The GitHub repository currently contains an earlier version.
-Publish the reviewed v1.3.3 source and update the public privacy policy before
-submitting the v1.3.3 Chrome package.
+**Before submission:** Confirm that the ZIP, published source, privacy policy, screenshots and reviewer instructions all describe the same approved version. Do not submit fixture screenshots as live Chrome captures.
 
 ## Permission justifications
 

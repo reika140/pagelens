@@ -1,0 +1,101 @@
+name: One-time verified source import (PageLens 1.3.3)
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".pagelens-import/ready"
+permissions:
+  contents: write
+jobs:
+  publish:
+    if: github.repository == 'reika140/pagelens'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify source, replace project tree and commit
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const zlib = require('node:zlib');
+          const { execFileSync } = require('node:child_process');
+          const workspace = '.pagelens-import';
+          const metadata = fs.readFileSync(workspace + '/ready', 'utf8').trim().split(/\r?\n/);
+          if (metadata.length !== 3 || metadata[1] !== '79' || metadata[2] !== '43') {
+            throw new Error('Unexpected source archive metadata');
+          }
+          const parts = fs.readdirSync(workspace).filter(v => /^part-\d{3}\.txt$/.test(v)).sort();
+          if (parts.length !== 43) throw new Error('Expected 43 verified parts');
+          const encoded = parts.map(name => fs.readFileSync(path.join(workspace, name), 'utf8').trim()).join('');
+          if (!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) throw new Error('Invalid base64 transfer content');
+          const compressed = Buffer.from(encoded, 'base64');
+          const digest = crypto.createHash('sha256').update(compressed).digest('hex');
+          if (digest !== metadata[0]) throw new Error('PageLens source SHA-256 checksum mismatch');
+          const payload = zlib.brotliDecompressSync(compressed);
+          const files = new Map();
+          let offset = 0;
+          while (offset < payload.length) {
+            if (offset + 8 > payload.length) throw new Error('Truncated source entry');
+            const nameLength = payload.readUInt32BE(offset);
+            const byteLength = payload.readUInt32BE(offset + 4);
+            offset += 8;
+            if (!nameLength || nameLength > 400 || byteLength > 300000 || offset + nameLength + byteLength > payload.length) {
+              throw new Error('Invalid source entry size');
+            }
+            const name = payload.subarray(offset, offset + nameLength).toString('utf8');
+            offset += nameLength;
+            if (name.startsWith('/') || name.includes('\\') || name.split('/').some(v => v === '..' || v === '.' || v === '') ||
+                name.startsWith('.git/') || name.startsWith('.pagelens-import/') || name.startsWith('dist/') ||
+                name.startsWith('releases/') || name.startsWith('node_modules/') || files.has(name)) {
+              throw new Error('Unsafe or duplicate source path: ' + name);
+            }
+            files.set(name, payload.subarray(offset, offset + byteLength));
+            offset += byteLength;
+          }
+          if (files.size !== 79 || files.size !== Number(metadata[1])) throw new Error('Unexpected source file count');
+          for (const mandatory of ['README.md','LICENSE','manifest.json','package.json','package-lock.json',
+                                   '.github/workflows/ci.yml','src/extension/organic-rank.ts',
+                                   'src/extension/serp-auto.ts','src/popup/main.ts']) {
+            if (!files.has(mandatory)) throw new Error('Missing required source: ' + mandatory);
+          }
+          const manifest = JSON.parse(files.get('manifest.json').toString('utf8'));
+          if (manifest.version !== '1.3.3' || manifest.manifest_version !== 3 ||
+              !manifest.action || manifest.action.default_popup !== 'popup.html' ||
+              !manifest.content_scripts || !manifest.content_scripts.length) {
+            throw new Error('Incorrect PageLens version or manifest');
+          }
+          const allowed = JSON.stringify(manifest.permissions);
+          if (allowed !== JSON.stringify(['activeTab','scripting','storage'])) {
+            throw new Error('Unexpected Chrome permissions');
+          }
+          if (!files.get('LICENSE').toString('utf8').includes('reika140')) {
+            throw new Error('Copyright attribution missing');
+          }
+          for (const name of files.keys()) {
+            if (name.includes('portfolio-sync') || name.includes('/internal/') || name.endsWith('.internal.md')) {
+              throw new Error('Non-public source path: ' + name);
+            }
+          }
+          const tracked = execFileSync('git', ['ls-files','-z'], {encoding:'utf8'}).split('\0').filter(Boolean);
+          for (const name of tracked) {
+            if (!files.has(name) && fs.existsSync(name)) fs.rmSync(name, {force:true});
+          }
+          for (const [name, data] of files) {
+            fs.mkdirSync(path.dirname(name), {recursive:true});
+            fs.writeFileSync(name, data);
+          }
+          fs.rmSync(workspace, {recursive:true,force:true});
+          fs.rmSync('.github/workflows/import-v133.yml',{force:true});
+          const screenshots = Array.from(files.keys()).filter(n => n.startsWith('docs/screenshots/') && n.endsWith('.png'));
+          console.log('Verified and imported', files.size, 'project files; screenshots:', screenshots.length);
+          NODE
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git add -f docs/screenshots/*.png
+          git commit -m "feat: publish PageLens v1.3.3 popup and SVG organic numbering"
+          git push origin HEAD:main

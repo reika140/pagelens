@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta name="description" content="">
+  <meta name="description" content="Duplicate description">
+  <meta name="viewport" content="width=device-width">
+  <link rel="canonical" href="">
+  <link rel="canonical" href="javascript:void(0)">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Product",</script>
+</head>
+<body>
+  <h3>Skipped heading hierarchy level</h3>
+  <h5></h5>
+  <h1>First H1</h1>
+  <h1>Second H1 (allowed in some documents)</h1>
+  <img src="/no-alt.png">
+  <img src="/empty-alt.png" alt="">
+  <img src="javascript:alert(1)" alt="Unsafe source">
+  <a>Missing href and accessible name</a>
+  <a href="">Empty href</a>
+  <a href="/no-name"><span aria-hidden="true"></span></a>
+  <a href="javascript:void(0)">Action link</a>
+</body></html>

@@ -1,0 +1,42 @@
+{
+  "name": "pagelens",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Local-first website inspection Chrome extension",
+  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "npm run typecheck && node scripts/lint.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "test:browser": "node scripts/run-python.mjs tests/browser_e2e.py",
+    "check": "npm run lint && npm test && npm run verify",
+    "package": "npm run check && node scripts/package.mjs",
+    "test:ui": "node scripts/run-python.mjs tests/panel_smoke.py",
+    "verify": "node scripts/verify-dist.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "reika140 (https://github.com/reika140)",
+  "homepage": "https://github.com/reika140/pagelens#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reika140/pagelens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reika140/pagelens/issues"
+  },
+  "keywords": [
+    "chrome-extension",
+    "website-inspector",
+    "seo",
+    "developer-tools",
+    "manifest-v3",
+    "local-first"
+  ]
+}

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PageLens Test: Website Inspection, Metadata, Headings, and JSON-LD</title>
+  <meta name="description" content="Inspect metadata, heading structure, image alt text, and links with clear evidence rather than arbitrary SEO scores. Includes Unicode text and punctuation safely.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index,follow">
+  <meta name="googlebot" content="max-snippet:-1">
+  <meta property="og:title" content="Primary OG title">
+  <meta property="og:description" content="Open Graph test card">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Twitter property fallback">
+  <link rel="canonical" href="https://example.com/canonical-path">
+  <link rel="alternate" hreflang="en-US" href="https://example.com/en">
+  <link rel="alternate" hreflang="vi-VN" href="https://example.com/vi">
+  <style>.nav-icon{width:24px;height:24px}</style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Test"},{"@type":["BreadcrumbList","Thing"],"itemListElement":[{"@type":"ListItem"}]}]}
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Café products, articles &amp; guides</h1>
+    <h2>Metadata overview</h2>
+    <h3>Images, links, and accessibility</h3>
+    <h2>Second section</h2>
+    <h3>Inside second section</h3>
+    <p><img src="/images/hero.png" alt="Blue café product photograph" width="640" height="480" loading="lazy"></p>
+    <p><img src="/images/decorative.svg" alt="" width="35" height="35"></p>
+    <p><img data-src="/images/lazy-original.jpg" loading="lazy" alt="Lazy image"></p>
+    <p><img srcset="/images/1x.png 1x, /images/2x.png 2x" alt="Responsive image"></p>
+    <a href="/about" class="internal">About, this site</a>
+    <a href="https://external.example.org/path?q=hello%20world" class="external">External resource</a>
+    <a href="#features">Jump to features</a>
+    <a href="mailto:someone@example.com">Email</a>
+    <a href="tel:+84123456789">Call</a>
+    <a href="/image-link"><img src="/images/icon.png" alt="Product photo" /></a>
+    <a href="/labelled" aria-label="An accessible labelled link"><svg width="20" height="20"></svg></a>
+    <section id="features"><h2>Features</h2><p>Footer text.</p></section>
+  </main>
+</body>
+</html>

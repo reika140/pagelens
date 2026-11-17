@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.wxt/
+.output/
+playwright-report/
+test-results/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+!.env.example
+releases/
+.coverage/
+
+# Browser-generated fixture captures (maintained README preview is .webp)
+docs/screenshots/*-fixture-preview.png
+
+# Local coordination notes are not part of the public product.
+docs/portfolio-sync.md
+docs/internal/
+docs/private/
+*.internal.md

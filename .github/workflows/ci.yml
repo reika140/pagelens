@@ -1,0 +1,69 @@
+name: PageLens CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: TypeScript, unit tests and extension release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit
+      - name: Static checks and unit tests
+        run: npm run check
+      - name: Package source and extension
+        run: node scripts/package.mjs
+      - name: Upload build and ZIPs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagelens-v1.0.1-candidate
+          path: |
+            dist/
+            releases/*.zip
+            releases/SHA256SUMS.txt
+
+  browser:
+    name: Chromium DOM and Side Panel smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies and Chromium
+        run: |
+          npm ci --ignore-scripts --no-audit
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Build MV3 extension
+        run: npm run build
+      - name: Run real DOM fixture tests
+        run: npm run test:browser
+      - name: Run compiled Side Panel UI tests
+        run: npm run test:ui
+      - name: Upload compiled fixture previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagelens-ui-fixture-previews
+          path: |
+            docs/screenshots/overview-fixture-preview.png
+            docs/screenshots/overview-fixture-dark-preview.png
+            docs/screenshots/headings-fixture-preview.png
+            docs/screenshots/links-fixture-preview.png

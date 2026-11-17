@@ -27,3 +27,10 @@ Screenshots must match the exact tagged source/extension build and current
 Chrome Web Store image requirements.
 
 The Chromium UI fixture now uses the exact bundled Be Vietnam Pro font files; previews do not rely on remote font services.
+
+## README previews (v1.0.2)
+
+The README links to versioned overview and activation-hint PNG screenshots,
+rendered by Playwright using compiled PageLens code and a local HTML
+fixture. They are not genuine installed-Chrome screenshots and must not
+be represented as Chrome Web Store screenshots.

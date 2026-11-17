@@ -12,9 +12,18 @@ observable evidence rather than an arbitrary SEO score.
 > unrestricted Chrome profile must be verified before a public Chrome Web Store
 > submission. The Chrome Web Store listing is not yet published.
 
-![PageLens light theme using a local HTML fixture](docs/screenshots/overview-fixture-preview.webp)
+![PageLens v1.0.2 Overview — compact white UI with sepia accents](docs/screenshots/pagelens-v1.0.2-overview.png)
 
-*This is a compiled-UI test preview, not an installed Chrome screenshot.*
+*Preview rendered from compiled PageLens code using a local HTML fixture; not a genuine installed-Chrome screenshot.*
+
+<details>
+<summary>View the new toolbar activation guidance (v1.0.2)</summary>
+
+![PageLens v1.0.2 instruction after navigating to another tab](docs/screenshots/pagelens-v1.0.2-activation-hint.png)
+
+*Click the PageLens icon again when temporary tab access expires. No ineffective Retry buttons.*
+
+</details>
 
 ## Features
 

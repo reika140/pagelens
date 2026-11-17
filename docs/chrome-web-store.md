@@ -2,7 +2,7 @@
 
 **Product:** PageLens — Website Inspector  
 **Maintainer:** [reika140](https://github.com/reika140)  
-**Version:** 1.0.1 (release candidate)
+**Version:** 1.0.2 (release candidate)
 
 These details are proposed for the Chrome Web Store Developer Dashboard; they
 are not a claim that the extension has been submitted or approved.
@@ -72,8 +72,8 @@ align them with `docs/privacy.md` and actual runtime behavior.
 
 - Icon: `assets/icons/icon-128.png` (128×128 PNG).
 - Capture at least one genuine installed-extension screenshot of the current
-  version; use the dimensions specified by the Dashboard at submission time
-  (commonly 1280×800 or 640×400 for screenshots).
+  version at 1280×800 or 640×400, ideally 1280×800.
+- Prepare a 440×280 promotional tile to satisfy the current image guidance.
 - Do **not** submit fixture previews from `docs/screenshots/` as genuine Chrome
   product screenshots. See `docs/screenshots.md`.
 - Verify name, developer display name, categories, descriptions and screenshots

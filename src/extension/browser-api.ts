@@ -15,11 +15,13 @@ declare global {
       };
     };
     scripting: {
-      executeScript: <T, A extends unknown[]>(options: {
+      executeScript: <T = unknown, A extends unknown[] = unknown[]>(options: {
         target: { tabId: number };
-        func: (...args: A) => T;
+        func?: (...args: A) => T | Promise<T>;
+        files?: string[];
         args?: A;
       }) => Promise<Array<{ result: T }>>;
+
     };
   };
 }

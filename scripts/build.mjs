@@ -46,5 +46,10 @@ await writeFile(join(dist, 'js/extension/google-serp-content.js'),
   '/* PageLens local Google SERP content script. Copyright (c) 2026 reika140. */\n' +
   rankCode + '\n' + autoCode + '\n');
 if (manifest.host_permissions?.length) throw new Error('No broad host_permissions are required');
-if (manifest.optional_host_permissions) throw new Error('Unexpected runtime site permission flow');
+if (manifest.optional_host_permissions?.length) throw new Error('Broad optional website access is not allowed');
+const linkCode = stripModuleSyntax(await readFile(join(dist, 'js/extension/link-highlighter.js'), 'utf8'));
+const linkAutoCode = stripModuleSyntax(await readFile(join(dist, 'js/extension/link-auto.js'), 'utf8'));
+if (/^(?:import|export)\s/m.test(linkCode + linkAutoCode)) throw new Error('Unbundled module in dynamic link highlighter');
+await writeFile(join(dist, 'js/extension/link-highlight-content.js'),
+  '/* PageLens optional local link highlighter. Copyright (c) 2026 reika140. */\n(function () {\n' + linkCode + '\n' + linkAutoCode + '\n})();\n');
 console.log(`Chrome MV3 extension built: ${dist}`);

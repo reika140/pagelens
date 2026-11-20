@@ -19,9 +19,10 @@ assert(JSON.stringify([...autoScripts[0].matches].sort()) === JSON.stringify([
   'https://www.google.com.vn/*','https://google.com.vn/*'].sort()),
   'Persistent site access must be restricted to Google Search hosts');
 assert(!manifest.host_permissions?.length,'No broad host permissions allowed');
-assert(!manifest.optional_host_permissions,'Unexpected runtime permission prompts');
+assert(!manifest.optional_host_permissions?.length, 'Optional all-sites permission is not allowed');
 assert(manifest.content_security_policy.extension_pages === "script-src 'self'; object-src 'self'",'Unexpected CSP');
-assert(manifest.version === '1.3.3','Expected the current maintenance release version');
+assert(manifest.version === '1.5.0','Expected the current maintenance release version');
+assert(manifest.version_name === manifest.version, 'Display and package versions must match');
 const license = await readFile(join(dist, 'LICENSE'), 'utf8');
 assert(license.includes('Copyright (c) 2026 reika140'), 'Release missing owner attribution');
 const files = [manifest.action.default_popup,
@@ -43,12 +44,23 @@ const rankingScript = await readFile(join(dist, 'js/extension/organic-rank.js'),
 assert(rankingScript.includes('rankOrganicResultsInPage'), 'Organic ranking feature missing from distribution');
 assert(rankingScript.includes('data-pagelens-overlay-root') && rankingScript.includes('createElementNS'), 'SVG root-level organic overlay missing');
 assert(!/fetch\(|XMLHttpRequest|sendBeacon/.test(rankingScript), 'Unexpected outbound network calls in organic numbering');
+const linkScript = await readFile(join(dist, 'js/extension/link-highlight-content.js'), 'utf8');
+assert(linkScript.includes('classifyAnchorRel') && linkScript.includes('storage.onChanged'), 'Dynamic link-highlighter bundle incomplete');
+assert((linkScript.match(/outline: 2px dashed/g) ?? []).length === 3, 'Link outline width must be 2px for all three types');
+assert(!/^(?:import|export)\s/m.test(linkScript), 'Dynamic link highlighter must be a classic content script');
+assert(!/fetch\(|XMLHttpRequest|sendBeacon|eval\(|new Function\(/.test(linkScript), 'Link highlighter must not transmit content or execute dynamic code');
 const automaticScript = await readFile(join(dist,'js/extension/google-serp-content.js'), 'utf8');
 assert(automaticScript.includes('rankOrganicResultsInPage') && automaticScript.includes('storage.onChanged'),
   'Automatic Google ranking script or toggle listener is missing');
 assert(!/^(?:import|export)\s/m.test(automaticScript), 'Chrome content script must not use ES module syntax');
 assert(!/fetch\(|XMLHttpRequest|sendBeacon|eval\(|new Function\(/.test(automaticScript),
   'Content script must not execute remote code or make requests');
+const httpScript = await readFile(join(dist,'js/extension/http-status.js'), 'utf8');
+const queueScript = await readFile(join(dist,'js/extension/http-queue.js'), 'utf8');
+assert(queueScript.includes('runHttpCheckQueue') && queueScript.includes('HTTP_MAX_URLS'), 'Bulk scan scheduler missing');
+assert(httpScript.includes('checkHttpUrlsInPage') && httpScript.includes('AbortController'), 'HTTP quick-check module missing');
+assert(!manifest.optional_host_permissions?.length && !manifest.host_permissions?.length, 'HTTP checker must not add website permissions');
+assert(popupScript.includes('image-file-name') && popupScript.includes('Alt text:'), 'Two-field image inspector missing');
 assert(!/highlightTab|highlightInPage|pagelens-target-overlay|locateButton/.test(popupScript + tabScript),
   'Unexpected page highlighting code in the release');
 const html = await readFile(join(dist,'popup.html'),'utf8');
@@ -71,4 +83,4 @@ for (const size of [16,32,48,128]) {
   assert(png.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),'Invalid PNG signature '+path);
   assert(png.readUInt32BE(16) === size && png.readUInt32BE(20) === size,'Wrong icon size '+path);
 }
-console.log('Distribution audit passed: MV3, Google-only automatic content script, minimal permissions, local preferences, popup, CSP and assets.');
+console.log('Distribution audit passed: MV3, Google-only organic content script, toolbar-triggered link highlighting, local preferences, popup, CSP and assets.');

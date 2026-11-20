@@ -1,7 +1,7 @@
 /* Copyright (c) 2026 reika140. SPDX-License-Identifier: MIT. */
 /** Serializable, versioned scan contract. Content is collected exclusively from the active tab. */
 export type Severity = 'error' | 'warning' | 'info';
-export type Section = 'overview' | 'metadata' | 'headings' | 'images' | 'links' | 'structured';
+export type Section = 'overview' | 'metadata' | 'headings' | 'images' | 'links' | 'structured' | 'settings';
 export type LinkKind = 'internal' | 'external' | 'special' | 'invalid';
 
 export interface LocatedValue {

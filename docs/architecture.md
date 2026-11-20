@@ -1,99 +1,75 @@
-# PageLens architecture (v1.3.3)
+# PageLens architecture (v1.5.0)
 
-## Browser surfaces
+PageLens is a dependency-minimal TypeScript extension on Chrome Manifest V3. It uses a compact popup for on-demand inspection and a narrowly scoped Google content script plus a user-activated link annotation script.
 
-PageLens uses a Chrome Manifest V3 popup for on-demand inspection and a
-narrowly scoped declarative content script for Google organic numbering.
-There is no background service worker or Side Panel.
-
-### On-demand website inspection
+## Inspection pipeline
 
 ```text
-Click the PageLens toolbar icon
-    -> Chrome opens popup.html and grants temporary activeTab access
-    -> chrome.tabs.query identifies the active tab
-    -> chrome.scripting.executeScript runs the DOM extractor once
-    -> normalize data and evaluate evidence-based findings
-    -> display six inspectors with Copy and filtered CSV controls
+Toolbar click → temporary activeTab grant → popup scan → DOM snapshot
+              → normalization → evidence-based rules → compact inspectors
 ```
 
-### Automatic Google first-page numbering
+The popup opens with **Metadata**, placing observed Index/Follow indications at the top. Other destinations are Headings, Images, Links, JSON-LD and Settings. The previous Overview destination is removed. Findings remain available under a collapsed Metadata section.
 
-```text
-Open a Google Search page (google.com or google.com.vn)
-    -> Chrome injects js/extension/google-serp-content.js at document_idle
-    -> the script reads the stored On/Off setting (default: On)
-    -> confirm standard page-one Web results URL
-    -> classify visible organic result cards conservatively
-    -> number by visual top-to-bottom order, not arbitrary DOM order
-    -> observe local result-card updates while enabled; renumber as needed
+Source boundaries:
 
-Switch Off in the popup
-    -> chrome.storage.local saves the preference
-    -> existing Google content scripts receive storage.onChanged
-    -> number labels are removed and DOM observers stop
-```
-
-The content script is built from strict TypeScript modules `organic-rank.ts`
-and `serp-auto.ts`. The build script bundles the compiled code into a **classic
-content script** without importing JavaScript modules at runtime. Both popup
-and content script use the same classification function; no duplicate ranking
-heuristic or remote service is involved.
-
-## Modules
-
-| Component | Responsibility |
+| Module | Role |
 | --- | --- |
-| `src/core/extract.ts` | One-shot DOM snapshot |
-| `src/core/normalize.ts` | Typed metadata, headings, images, links, JSON-LD |
-| `src/core/rules.ts` | Evidence-based findings |
-| `src/core/export.ts` | Copy and escaped CSV/Markdown serializers |
-| `src/extension/locate.ts` | Popup's temporary activeTab extraction |
-| `src/extension/organic-rank.ts` | Self-contained Google organic classifier and rank labels |
-| `src/extension/serp-auto.ts` | Content-script startup, settings and page-local DOM observer |
-| `src/popup/main.ts` | Six inspectors and global On/Off switch |
+| `src/core/extract.ts` | Bounded one-shot webpage DOM snapshot |
+| `src/core/normalize.ts` | Types, link classification, image sources and JSON-LD parsing |
+| `src/core/rules.ts` | Evidence-qualified findings and editorial heuristics |
+| `src/core/export.ts` | Unicode-safe heading Copy and filtered CSV output |
+| `src/popup/main.ts` | Popup inspector navigation, Settings and controls |
+| `src/extension/organic-rank.ts` | Conservative Google organic result classifier and SVG position overlays |
+| `src/extension/serp-auto.ts` | Google-only automatic startup and preference changes |
+| `src/extension/link-highlighter.ts` | Follow/Nofollow/UGC classification, reversible link underlines and DOM observer |
+| `src/extension/link-auto.ts` | Dynamic link-highlighter startup |
+| `src/extension/http-status.ts` | Bounded page-context HEAD/GET status checks |
+| `src/extension/http-queue.ts` | Deduplication, progress and cancel/resume scheduling across batches |
 
-## Security and privacy
+## Automatic Google organic numbering
 
-Permissions: `activeTab`, `scripting`, and `storage`. The `content_scripts`
-match patterns grant page access **only** on `google.com` and
-`google.com.vn`; other pages are only inspected after an explicit toolbar
-click. There are no broad host permissions, remote scripts, analytics,
-external network calls, background crawler or background service worker.
+A declarative content script runs on the four Google Search host patterns defined in the manifest. It reads the local On/Off setting and only annotates supported first-page Web search results. It tries to exclude ads, AI Overview citations and other recognizable rich modules. Numbers are SVG paths rendered outside the result cards, not inserted into their text or links.
 
-Organic results are annotated through a single dedicated
-`pagelens-organic-overlay` attached directly to the document root, outside
-Google's result cards. Labels are locally rendered as SVG paths derived from
-the bundled OFL-1.1 Be Vietnam Pro font, not from live HTML text. PageLens
-never changes the result card's `position`, `transform`, fonts or markup.
-Turning the setting Off or navigating away removes the whole overlay.
-The content script does not modify search links, submit forms, read cookies,
-make network requests or alter Google's actual result order.
+This code does not crawl, query a rank API or send search terms to the publisher. Google's changing markup requires live QA for each release.
 
-The popup uses `textContent` for page-owned strings, never executable HTML.
-The extractor limits oversized DOM collections. CSV export includes UTF-8
-and spreadsheet formula protection. JSON-LD parsing is bounded.
+## Link outlines with temporary tab access
 
-## Popup constraints
+Link highlighting starts Off and saves only a local On/Off preference. It does not ask for persistent HTTP(S) website access or register an all-sites content script. A click on PageLens grants `activeTab` access for the active webpage. When the option is On, the popup injects the bundled `link-highlight-content.js` into that page.
 
-The popup retains fixed 448 x 568 CSS-pixel intrinsic dimensions and a 54-pixel
-navigation rail. Its UI has six inspectors and does not highlight elements on
-the webpage. Chrome closes the popup when focus changes.
+The script examines `<a href>` and `rel`, applying a reversible data attribute and a dashed outline for Follow, Nofollow or UGC. UGC takes precedence over Nofollow; Sponsored-only links are not represented as Follow. It never changes link destinations, `rel`, accessible names or click handlers. An observer updates newly added links and attribute changes. Turning the option Off removes the outlines via `chrome.storage.onChanged`.
 
-## Verification scope
+Navigating to a different page does **not** annotate it automatically. This is the intentional trade-off for avoiding all-sites access while preserving Chrome's permission model.
 
-- Strict TypeScript and no-runtime-dependency build.
-- DOM fixtures for metadata, headings and link/image classification.
-- Google Search fixtures covering AI Overview citations, sponsored links,
-  visual order, delayed results, Off/On changes and unsupported result types.
-- Playwright tests execute compiled PageLens code with Chrome API adapters.
+## Quick HTTP status checks
 
-The environment cannot currently confirm actual installed-Chrome Google
-results. Verify that live Google variations display correct positions before
-publishing the release or uploading it to the Chrome Web Store.
+The Links inspector has a single **Check all** action covering both Internal and External links, regardless of the currently selected tab or text filter. A dedicated queue deduplicates fragment variants and processes up to 2,000 distinct HTTP(S) URLs per user-initiated scan. The cap is disclosed in the UI on pages that exceed it. The queue launches a maximum of two 16-URL batches simultaneously. Each injected batch has at most five concurrent requests, with a 3.5-second timeout per request. Thus the total network concurrency is at most 10. A compact progress bar displays completed/total; Stop prevents future batches, allows already-running batches to finish, and retains partial results for Resume. A new scan can explicitly Recheck all.
 
-References:
+The scan runs while the Chrome action popup is open. Chrome closes popups when focus moves outside, so the current queue and its in-memory results do not continue in a background service. This is an intentional trade-off for retaining `activeTab`-only website access.
 
-- https://developer.chrome.com/docs/extensions/reference/manifest/content-scripts
-- https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions
-- https://developer.chrome.com/docs/extensions/reference/api/storage
+The checker is injected only when requested through the existing `activeTab` and `scripting` permissions. Same-origin requests use `HEAD` with current-page credentials; 405 or 501 can fall back to a lightweight `GET` with `Range: bytes=0-0` and prompt body cancellation. Cross-origin requests do not include credentials and are limited by the page's normal CORS policy. All requests use `referrerPolicy: 'no-referrer'`. URLs on a different private/local network host are not probed.
+
+Response badges display *observed* HTTP statuses, including 401, 402, 403 and 501. For redirects, they show the final response. Timeout and network/CORS failures are **Not verified**, never a claim of a broken link. This feature intentionally contacts the link destinations, so it cannot be described as offline-only. No broad host permissions, proxy, analytics or persistent crawler are used.
+
+## Image previews
+
+Images are displayed as two-column rows: a 68 × 68 thumbnail on the left and two text fields (filename, alt text) on the right. Both use 12px Regular weight. Safe raster data URLs and HTTP(S) URLs may be used. Unsafe or unavailable URLs fall back to a placeholder. Thumbnails use lazy loading and `referrerPolicy='no-referrer'`. Their source hosts may receive ordinary requests for the images.
+
+## Security
+
+All inspected page strings are untrusted. The popup renders data with `textContent`, never page-controlled HTML. Source collection is bounded; JSON-LD parser output is formatted safely; CSV includes UTF-8 BOM and formula-injection protection. No analytics, upload API or remote scripts are used; image previews and explicit HTTP checks may contact image/link destinations. Those requests do not go to PageLens servers. Content scripts run only in their declared or explicitly granted scope.
+
+## Testing and release
+
+- `npm run check`: TypeScript strict checks, static audit, unit tests, build validation.
+- `npm run test:browser`: real DOM fixture extraction via Chromium.
+- `npm run test:ui`: compiled popup UI with a Chrome API adapter, including on-demand link toggling and preview layout.
+- `npm run test:serp` and `npm run test:auto-serp`: Google organic classifier / On-Off behavior.
+- `npm run test:links`: compiled on-demand link script on native DOM with dynamic mutations.
+- `npm run test:http`: actual local HTTP responses via Chromium (or Node fetch when managed Chromium blocks local HTTP), plus popup adapter and unit tests.
+
+Browser adapters do **not** prove the Chrome permission prompt or toolbar interaction works on an unrestricted installed extension. Those are mandatory acceptance steps for the Chrome Web Store release.
+
+## Image display and link outline
+
+The image list presents only the source filename and literal alt text next to a safe thumbnail; raw source and dimensions remain in scan data and CSV export. Link highlighter outlines are 2px dashed and use the existing temporary active-tab model.

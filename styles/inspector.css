@@ -318,3 +318,60 @@ body { font-size: 13px; line-height: 1.5; letter-spacing: -.008em; }
 .serp-switch:disabled { opacity:.5;cursor:wait; }
 .serp-switch-state { width:18px;font-size:11px;color:var(--muted); }
 .serp-tool-hint { font-size:10.5px;line-height:1.45;margin:0;color:var(--muted);width:100%; }
+
+/* v1.4: reader-first inspection; no decorative dashboard or section subtitles. */
+.inspector-rail { overflow: hidden; padding-top: 9px; padding-bottom: 9px; gap: 8px; }
+.rail-items { flex: 1; min-height: 0; gap: 3px; }
+.settings-nav-button { margin-top: auto; }
+.app-header { min-height: 48px; padding: 7px 13px; }
+.main-content { padding: 8px 14px 12px; }
+.section-head, .section-description { display:none; }
+.section-title-row { align-items: center; margin: 0 0 7px; }
+.compact-module-name { display:block; margin: 0; font-size:12px; line-height:1.4; font-weight:600; color:var(--muted); }
+.data-row, .data-table .data-row { padding: 7px 0; }
+.data-label { margin: 0 0 1px; }
+.data-value { font-size: 12.25px; line-height: 1.45; }
+.data-table { margin-bottom: 4px; }
+.heading-card { padding-top: 7px; padding-bottom: 7px; }
+.item-card { padding-top: 7px; padding-bottom: 7px; }
+.robots-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; margin-bottom: 6px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.robots-status { display:flex; align-items:baseline; gap:7px; font-size:12px; }
+.robots-key { color:var(--muted); }
+.robots-value { font-size:12px; font-weight:600; }
+.robots-allowed { color:var(--good); }
+.robots-blocked { color:var(--error); }
+.robots-hint { margin: 0; grid-column: 1 / -1; color:var(--muted); font-size:10px; line-height:1.35; }
+.observations { border-top:1px solid var(--line); margin-top:6px; padding:8px 0; }
+.observations>summary { font-size:11.5px; font-weight:500; cursor:pointer; color:var(--muted); }
+.observations .finding { border-bottom:1px solid var(--line); }
+.serp-tool { flex-wrap:wrap; margin:0; padding:11px 0; border-top:0; }
+.link-highlighter-legend { width:100%; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.legend-item { display:inline-flex;gap:5px;align-items:center;font-size:10.5px;color:var(--muted); }
+.legend-item::before { content:'';width:8px;height:8px;border-radius:2px;background:#398365; }
+.legend-nofollow::before { background:#bf5b48; }
+.legend-ugc::before { background:#8664b6; }
+.setting-plain-row { display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:10px 0;font-size:12px; }
+.settings-panel { margin:0; }
+.settings-panel summary { font-size:11.5px; }
+
+/* Two-field image inspector: filename and literal alt text beside the thumbnail. */
+.image-row { display: grid; grid-template-columns: 68px minmax(0, 1fr); column-gap: 11px; align-items: start; padding: 9px 0; }
+.image-thumbnail { width: 68px; height: 68px; position: relative; display: grid; place-items: center; background: var(--soft); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; color: var(--subtle); }
+.image-thumbnail-fallback { display: grid; place-items: center; width: 100%; height: 100%; }
+.image-thumbnail-fallback[hidden] { display: none; }
+.image-thumbnail-img { width: 100%; height: 100%; display: block; object-fit: contain; background: var(--soft); }
+.image-row-info { min-width: 0; display: flex; flex-direction: column; gap: 6px; padding-top: 1px; }
+.image-file-name { min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.image-alt-line { display: flex; gap: 5px; align-items: baseline; min-width: 0; font-size: 12px; font-weight: 400; line-height: 1.45; }
+.image-alt-label { color: var(--muted); flex: none; }
+.image-alt-value { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Lightweight on-demand HTTP checks, shown only when requested. */
+.link-action-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.link-actions { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.link-actions .inline-action { padding: 5px 7px; min-height: 29px; font-size: 10.5px; }
+.http-check-note { margin: 7px 0 2px; color: var(--muted); font-size: 10.5px; line-height: 1.45; }
+.http-status-pill { font-size: 10px; font-weight: 500; font-variant-numeric: tabular-nums; }
+/* User-triggered bulk link checks: readable progress without a second dashboard. */
+.http-progress { display: block; width: 100%; height: 5px; margin: 4px 0 8px; accent-color: var(--accent); }
+.http-progress[hidden] { display: none; }

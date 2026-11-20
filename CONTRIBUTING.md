@@ -1,41 +1,35 @@
 # Contributing to PageLens
 
-Thanks for your interest in PageLens. The most useful contributions make the inspector more accurate, more accessible, or easier to use without expanding its access to browsing data.
+Contributions are welcome when they improve correctness, accessibility,
+security, usability, or maintainability without adding unnecessary access
+permissions. The project intentionally avoids arbitrary SEO scores.
 
-## Before you begin
+## Development
 
-Search [existing issues](https://github.com/reika140/pagelens/issues) to check whether someone has already reported the problem. For large changes, open an issue first so we can discuss the approach.
+1. Fork the repository and create a short-lived branch.
+2. Run `npm install`, `npm run lint`, and `npm test`.
+3. Add a behavioral test for new or changed rule logic; use or extend the
+   HTML fixtures for DOM extraction changes.
+4. Run Playwright DOM/UI smoke tests if you changed extraction, dynamic link annotations, HTTP checking or
+   visual interactions (`python tests/browser_e2e.py`, `python tests/popup_smoke.py` and `npm run test:http`).
+5. Update English documentation and the changelog when changing user behavior.
+6. Submit a pull request with motivation, screenshots for UI changes, test
+   results and any new permissions / privacy implications.
 
-Bug reports should include the PageLens and Chrome versions, clear reproduction steps, and an expected result. Use a public test page whenever possible; please don't include passwords, account details, sensitive URLs, or customer data.
+## Engineering guidelines
 
-## Working on the code
+- TypeScript strict mode; no `any` where a narrow contract is possible.
+- Do not use network calls to upload webpage content, screenshots, metadata or
+  user reports. Do not add remote scripts or third-party analytics.
+- Treat all page-derived fields as untrusted. Render with `textContent`, never
+  executable HTML; sanitize CSV output against spreadsheet formula injection.
+- Do not mislabel heuristics as Google's rules or link categories as HTTP
+  validation. Each finding needs a concrete observation and qualified advice.
+- Use only the toolbar-triggered `activeTab` grant; link annotations work after a user toolbar click; new site access requires a privacy review.
+- Keep locators transient and acknowledge stale DOM.
+- Avoid large runtime dependencies if a browser API suffices.
 
-1. Fork the repository and create a branch for your change.
-2. Install dependencies with `npm ci`.
-3. Run `npm run check` before opening a pull request.
-4. If you changed DOM extraction, Google Search numbering, or popup interactions, also run the applicable browser tests:
-   - `npm run test:browser`
-   - `npm run test:ui`
-   - `npm run test:serp`
-   - `npm run test:auto-serp`
-5. Add or update a fixture or behavioral test when fixing a regression.
-6. Explain *why* the change is needed in your pull request, and include before/after screenshots for visual changes.
+## Versioning
 
-Browser tests require Python Playwright and Chromium. See the [architecture notes](docs/architecture.md) for component boundaries and the [README](README.md) for build instructions.
-
-## A few project principles
-
-- Keep findings evidence-based. Heuristics must be described as heuristics, not Google rules.
-- Treat webpage content as untrusted. Avoid executable HTML and sanitize anything copied or exported.
-- Keep local processing and the current limited-permission model. Any new site access or data retention needs a documented reason and privacy review.
-- Don't add unsolicited analytics, remote scripts, accounts, or network collection.
-- Keep interfaces and public documentation in English. Screenshots must not contain personal information or internal project notes.
-- Clearly label fixture screenshots as test previews; never present them as installed-Chrome or live Google captures.
-
-Small, well-tested pull requests are easier to review than large bundles of unrelated changes.
-
-## Releases
-
-Use Semantic Versioning. Update [CHANGELOG.md](CHANGELOG.md) when the behavior changes, and verify the compiled extension before requesting a release. Chrome Web Store publication is separate from merging a pull request.
-
-PageLens source is MIT-licensed. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for bundled font licenses.
+Use Semantic Versioning. Add a changelog entry and retest the release ZIP on a
+clean Chromium/Chrome profile before tagging a GitHub release.

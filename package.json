@@ -1,6 +1,6 @@
 {
   "name": "pagelens",
-  "version": "1.3.3",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "description": "Local-first website inspection Chrome extension",
@@ -16,7 +16,9 @@
     "test:ui": "node scripts/run-python.mjs tests/popup_smoke.py",
     "verify": "node scripts/verify-dist.mjs",
     "test:serp": "node scripts/run-python.mjs tests/google_serp_e2e.py",
-    "test:auto-serp": "node scripts/run-python.mjs tests/google_auto_e2e.py"
+    "test:auto-serp": "node scripts/run-python.mjs tests/google_auto_e2e.py",
+    "test:links": "node scripts/run-python.mjs tests/link_highlight_e2e.py",
+    "test:http": "node scripts/run-python.mjs tests/http_status_e2e.py"
   },
   "devDependencies": {
     "typescript": "5.8.3"

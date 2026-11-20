@@ -18,7 +18,7 @@ globalThis.chrome = {
   },
 };
 
-test('popup-only Chrome action has minimum temporary-access permissions', () => {
+test('popup-only Chrome action uses temporary inspection access without broad site access', () => {
   assert.equal(manifest.manifest_version, 3);
   assert.equal(manifest.action.default_popup, 'popup.html');
   assert.deepEqual([...manifest.permissions].sort(), ['activeTab', 'scripting', 'storage']);

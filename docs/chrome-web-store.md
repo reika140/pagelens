@@ -1,104 +1,65 @@
-# Chrome Web Store submission guide - PageLens v1.3.3
+# Chrome Web Store submission notes — PageLens v1.5.0
 
 **Publisher:** [reika140](https://github.com/reika140)  
-**Status:** Beta; not submitted or approved.
+**Status:** Beta, not submitted or approved.
 
 ## Single purpose
 
-Provide local, human-readable technical inspection of a webpage and optional
-organic position labels for the first ordinary Google Search results page.
-The website inspector is invoked from Chrome's toolbar popup. Organic numbering
-runs automatically on supported Google Search pages unless disabled.
+Local inspection and annotation of website and search-result technical properties, including metadata, links and Google organic result positions. All analysis takes place in the user's browser.
 
-## Suggested English listing
+## Listing text (English)
 
-**Name:** PageLens - Website Inspector
+**Name:** PageLens — Website Inspector
 
-**Short description:** Inspect website metadata, headings, images, links and JSON-LD. Optionally number Google organic search results.
+**Short description:** Inspect metadata, headings, images, links and JSON-LD, with optional link highlighting and Google organic numbering.
 
-**Full description:**
+**Description:**
 
-> PageLens is a compact, local-first website inspection extension for Chrome.
-> Open its toolbar popup to inspect metadata, headings, image alternative text,
-> internal and external links and JSON-LD. Navigate findings, copy headings or
-> JSON-LD and export filtered image and link lists as CSV.
->
-> On supported Google Search pages, PageLens automatically labels the visible
-> organic results on page one, ignoring recognizable advertising and rich
-> modules. Turn this feature On or Off in the popup at any time.
->
-> PageLens does not require an account, crawl full sites, check backlinks,
-> query an external ranking provider, track browsing activity or transmit
-> scanned pages to developer servers. Results are generated locally.
+PageLens makes page inspection easier. Open its compact toolbar popup to review title, robots meta directives, canonical URL, heading structure, image alt attributes, internal and external links, and JSON-LD. Copy headings, inspect evidence and export filtered image/link lists as CSV. The Check all action inspects link response status codes on demand, with no permanent crawling.
 
-**Category:** Developer Tools (or the nearest available category)  
+For supported Google Search results, PageLens can number recognized organic results automatically. Optionally enable color-coded Follow, Nofollow and UGC link annotations on webpages. The two features can be switched On or Off independently in Settings. Link outlines are applied after the user clicks the PageLens toolbar icon on a page; there is no all-sites permission request.
+
+PageLens is free and open-source, has no login, and does not upload webpage data to a developer server. The optional Check HTTP action sends limited HEAD/GET requests directly to destination websites when clicked. It does not provide arbitrary SEO scores, full-site crawling or remote ranking data.
+
 **Language:** English  
 **Website:** https://github.com/reika140/pagelens  
 **Support:** https://github.com/reika140/pagelens/issues  
-**Privacy policy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md
+**Privacy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md
 
-**Before submission:** Confirm that the ZIP, published source, privacy policy, screenshots and reviewer instructions all describe the same approved version. Do not submit fixture screenshots as live Chrome captures.
+## Permission justification
 
-## Permission justifications
-
-| Permission or site pattern | Justification |
+| Permission | Justification |
 | --- | --- |
-| `activeTab` | Read only the selected tab after the user opens the popup. |
-| `scripting` | Run an on-demand DOM extractor when inspecting the selected page. |
-| `storage` | Persist the On/Off preference for automatic Google organic numbering. |
-| `content_scripts.matches`: `google.com`, `google.com.vn` | Automatically label first-page organic Google Search results without needing a toolbar click. |
+| `activeTab` | On-demand access after opening PageLens |
+| `scripting` | Inspect a user-activated tab, annotate links and run bounded HTTP checks after a separate explicit click |
+| `storage` | Remember two independent On/Off settings |
+| Google-only content script | Automatically annotate recognized organic results |
 
-The Google host access is an intentional new permission compared with v1.3.0.
-The Chrome Web Store listing and privacy practices must disclose it. Chrome
-may display a site-access warning on installation or upgrade. There are no
-broad all-sites permissions, external analytics, remote code or background
-service workers. The feature observes only local result-page DOM updates and
-makes no additional network requests.
+PageLens declares **no** HTTP(S) `host_permissions` or `optional_host_permissions`. Outside the separately authorized Google Search domains, PageLens can inspect or annotate a webpage only following a deliberate toolbar click. Chrome may make image requests to display remote thumbnails. The optional, user-triggered HTTP checker processes distinct URLs in 16-URL batches, with at most 10 concurrent requests and a 2,000-URL safety cap per user click. The user can Stop/Resume and see progress; external checks obey CORS. No scanned data is uploaded to a PageLens server.
 
-## Privacy questionnaire
+## Reviewer instructions
 
-Do not claim that the extension never reads page content. The on-demand
-inspector reads metadata and page elements locally. On matching Google
-Search results, the content script reads result headings, links and page
-structure to place number labels. Scan data and Google queries are not
-uploaded, sold, or shared with the publisher. Only the preference and theme/
-heuristic settings are kept locally in Chrome.
+1. Install v1.5.0 and open a regular public webpage.
+2. Click the PageLens toolbar icon; confirm Metadata opens first, Index/Follow appear above title/description and the five other navigation destinations work.
+3. Verify Headings Copy, Images/Links filtered CSV and formatted JSON-LD; Image filename and alt text use equal font sizes and Regular weight.
+4. In Links, select Check all on a test page with HTTP 200/401/402/403/501 responses. Confirm status labels and that cross-origin CORS failures are Not verified, not broken.
+5. Visit a supported Google Search page-one query; organic number labels should appear when enabled without opening the popup.
+6. Open the **Settings** destination (last rail icon). Turn organic numbering Off and On.
+7. Verify link outlines are Off by default. Turn it On, visit a page with Follow, Nofollow and UGC links, and click the PageLens toolbar icon.
+8. Confirm the colored dashed outlines, then disable highlighting and verify they disappear. Opening a new website without clicking PageLens should not add outlines.
+9. No account, server, API key or payment is needed.
 
-## Media assets and QA
+## Submission requirements
 
-- Product icon: `assets/icons/icon-128.png`.
-- Capture 1-5 screenshots of the actual extension installed in Chrome at
-  dimensions supported by the current Chrome Web Store Dashboard.
-- Consider demonstrating the PageLens popup and the numbered organic results
-  in separate genuine screenshots. Never use local HTML fixture screenshots as
-  if they came from a live Google result page.
-- Confirm correct labels on Google Search page one with AI Overview and
-  sponsored results, with and without the automatic switch enabled.
-
-## Reviewer test instructions
-
-1. Install PageLens and open a normal public HTTPS webpage.
-2. Click the PageLens toolbar icon to inspect the page in a 448 x 568 popup.
-3. Test all six inspectors, Headings Copy, Images/Links Export CSV and JSON-LD.
-4. Without clicking the PageLens toolbar icon, open a Google Search on
-   `https://www.google.com/search?q=bigcommerce+to+shopify`.
-5. Verify organic numbers appear on page one. Ads, AI Overview citations,
-   People Also Ask and Top Stories should not receive numbers.
-6. Click PageLens and toggle **Automatic organic ranking numbers** Off;
-   number labels should disappear. Toggle On to restore them.
-7. Verify page-two and Images results are not numbered.
-8. No account, secret API key, backend configuration or payment is required.
-
-## Release gates
-
-Run `npm run check`, `npm run test:browser`, `npm run test:ui`,
-`npm run test:serp`, `npm run test:auto-serp` and `npm run package`.
-A successful fixture test is not equivalent to real Google DOM QA. Publish only
-once Chrome installation and permission behavior have been verified.
+- Use the **compiled extension ZIP**, not the source ZIP.
+- Test with an unrestricted Chrome Desktop installation. Fixture tests do not validate permission dialogs.
+- Submit genuine screenshots of the installed extension, not HTML fixtures or mockups; ensure all visible content is English and contains no account data.
+- Audit required permissions and content-script matches against the installed manifest.
+- Ensure the public GitHub repository and privacy policy describe exactly the same version as the submitted ZIP.
+- Recheck the current Chrome Web Store policy and privacy practices at submission time.
 
 Official references:
 
 - https://developer.chrome.com/docs/webstore/program-policies/policies
-- https://developer.chrome.com/docs/webstore/program-policies/listing-requirements
-- https://developer.chrome.com/docs/extensions/reference/manifest/content-scripts
-- https://developer.chrome.com/docs/extensions/reference/api/storage
+- https://developer.chrome.com/docs/extensions/reference/api/permissions
+- https://developer.chrome.com/docs/extensions/reference/api/scripting

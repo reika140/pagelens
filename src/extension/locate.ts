@@ -13,10 +13,10 @@ export function isSupportedPage(url: string | undefined): boolean {
 export function readableError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   if (isScriptAccessDenied(error)) {
-    return 'Chrome denied access to this tab. Check the PageLens site-access setting and reopen the popup.';
+    return 'Chrome blocked access to this page. Check extension site access, then reopen PageLens.';
   }
-  if (/No tab with id|tab was closed|frame .* removed/i.test(message)) return 'The tab changed or closed before the scan completed. Try scanning again.';
-  return `Scan failed: ${message}`;
+  if (/No tab with id|tab was closed|frame .* removed/i.test(message)) return 'The tab changed or closed during the scan. Open PageLens again.';
+  return 'The page could not be scanned. Reopen PageLens and try again.';
 }
 
 export async function currentActiveTab(): Promise<{ id: number; url?: string }> {

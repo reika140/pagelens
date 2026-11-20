@@ -1,81 +1,45 @@
 # PageLens Privacy Policy
 
-**Effective date:** November 17, 2026  
+**Effective date:** November 20, 2026  
 **Publisher:** [reika140](https://github.com/reika140)  
-**Product:** PageLens - Website Inspector
+**Product:** PageLens — Website Inspector
 
-## What PageLens does
+## What the extension does
 
-PageLens has two distinct, local browser features:
+PageLens has three inspection/annotation features and an optional link-checking action:
 
-1. **Website inspection:** When you click the PageLens toolbar icon, the popup
-   inspects the active HTTP(S) webpage's URL, metadata, heading elements, image
-   attributes, link attributes and JSON-LD structured data. It generates
-   findings and lets you copy or export selected information.
-2. **Automatic Google organic numbering:** When the setting is on (the default),
-   a small content script operates on Google Search results at `google.com` and
-   `google.com.vn`. On the first ordinary Web results page, it identifies
-   supported organic result links and inserts local numeric labels. It excludes
-   advertising and recognizable AI/rich-result modules. It may observe local
-   changes to Google Search result markup so numbers stay in order. It never
-   contacts Google separately or queries rankings from another service.
+1. **On-demand inspection.** Clicking the extension icon opens a popup and reads the selected HTTP(S) page's metadata, headings, image attributes, anchor attributes, and JSON-LD to display findings and prepare user-requested Copy/CSV exports.
+2. **Automatic organic numbering.** On supported Google Search pages (`google.com` and `google.com.vn`), PageLens reads result titles, links and nearby structure to identify recognized organic results on page one. This feature is On by default and can be disabled in Settings.
+3. **On-demand link outlines.** When enabled in Settings, PageLens reads anchor destinations and `rel` on a webpage only after you click its toolbar icon. Dashed colors identify Follow, Nofollow and UGC links. No all-sites permission is requested and this feature is Off by default.
+4. **Optional HTTP status checks.** When you explicitly press **Check all** in the Links inspector, PageLens progressively checks up to 2,000 distinct HTTP(S) URLs from the current page, including both Internal and External links. Requests use two concurrent batches of up to 16 URLs, with at most ten total requests in flight. No requests are made until you click. HEAD is used first; for same-origin HEAD 405 or 501, it may try a lightweight GET. Requests follow redirects, use no Referer header and do not include credentials for external domains. Destination servers may log requests, your IP address and user agent. A progress display and Stop control allow you to interrupt the remaining work. This is not a private/offline operation; the check is never launched automatically and stops when the popup closes.
 
-Automatic numbering runs **without opening the popup**. Use the **Automatic
-organic ranking numbers** On/Off switch in the popup to disable it. The choice
-is saved in the browser. The feature is not a live ranking tracker, cannot
-verify Google's internal result classification and might skip layouts it
-cannot confidently recognize.
+## Collection, processing and retention
 
-PageLens does not intentionally inspect form input values, passwords, or
-private browsing history. Search queries may appear in the Google Search URL
-and page DOM, but PageLens does not retain or transmit them to the publisher.
+The inspection and annotation features process page information locally in the browser. PageLens does not upload scan results, inspected URLs, search queries or exported files to the publisher or a developer server. Image thumbnails may request their original URL from the image host; that host may receive an ordinary image request. On-demand HTTP checks contact the linked hosts directly. Those hosts may receive your IP address and request details, but PageLens itself receives no telemetry. It has no analytics, user accounts, remote executable code, ads or telemetry.
 
-## Local processing and retention
+- Popup inspection and HTTP check results stay in memory until the popup closes.
+- Google ranking labels and on-demand link annotations exist only as temporary DOM additions on the displayed page and disappear when disabled or on navigation.
+- On/Off preferences are saved with Chrome `storage.local`. Theme and editorial length preferences are stored locally in the popup. No browsing history is retained.
+- CSV files are saved to the user's computer only when exported. These files can contain website data, so review them before sharing.
+- PageLens does not intentionally read form field values, cookies, passwords, or private browser history. It may still encounter public page text or URLs that contain personal information; these are not transmitted.
 
-- No login, cloud service, analytics SDK, advertising, telemetry or external
-  network requests are used by PageLens.
-- Popup scan data is processed in local memory and discarded when the popup
-  closes. Ranking numbers are DOM elements on the current Google results page
-  and disappear when that page is closed, changed or the feature is switched off.
-- The automatic ranking setting is stored using Chrome `storage.local`. The
-  light/dark theme and editorial heuristics remain in the popup's localStorage.
-- PageLens does not sell, upload or share inspected content, URLs, search
-  queries or exported files with the developer or third parties.
-- Copy and CSV export are user-initiated; export files are saved locally by
-  Chrome and can contain data from the inspected page.
+## Chrome permissions
 
-## Chrome permissions and access
-
-| Permission or site scope | Purpose |
+| Permission or site access | Reason |
 | --- | --- |
-| `activeTab` | Temporarily inspect the active website after clicking the icon |
-| `scripting` | Run one-time, user-triggered DOM extraction in the selected tab |
-| `storage` | Remember the On/Off preference for automatic organic numbering |
-| Google content-script access | Automatically add and remove rank numbers on `google.com` and `google.com.vn` |
+| `activeTab` | Temporary access to inspect the page after the user clicks the icon |
+| `scripting` | Run DOM extraction and link annotation only after toolbar activation |
+| `storage` | Save local On/Off settings |
+| Declared Google content scripts | Automatic organic numbering only on the supported Google domains |
 
-The Google access is declared in `content_scripts.matches`. Chrome may display
-an access warning for those domains during installation or upgrade. It is
-restricted to those Google domains, not every website. The content script
-checks that the page is the first ordinary Web results page before numbering.
-Chrome may also allow you to manage site access under extension details.
+There are no all-site `host_permissions` or `optional_host_permissions`. The Google-only content script has narrow site matches for automatic organic numbers. Other webpages are inspected and annotated only after a toolbar click grants `activeTab`. Link status checks need an additional explicit button click and are subject to normal CORS limits on external destinations; unavailable responses are never represented as confirmed HTTP errors. There is no `tabs` permission or background service worker.
 
-There is no `tabs` permission, broad `host_permissions`, Side Panel permission,
-persistent background service worker, or remote executable code. PageLens
-stays local-first and is not a full-site crawler.
+## Your controls
 
-## User controls
+Open **Settings** in the PageLens popup to switch organic numbering or link highlighting On or Off. Turning link highlighting Off removes the outlines from previously activated tabs that are still open. Other tabs are not annotated until PageLens is clicked on each of them.
 
-The automatic Google numbering preference can be switched on or off in the
-PageLens popup. Turning it off removes PageLens number labels on Google tabs
-where its content script is running. Users can also remove the extension,
-clear its site data in Chrome or delete any exported files manually.
+Uninstalling PageLens removes its extension storage. Manually downloaded CSV files remain yours until you delete them.
 
-Review exported URLs and page metadata before distributing them, as webpage
-content can contain personal information.
+## Contact
 
-## Contact and changes
-
-Use [GitHub Issues](https://github.com/reika140/pagelens/issues) for questions
-or privacy concerns. Do not post private pages, account details, credentials
-or sensitive URLs in public issues. Any material changes to data practices
-will be reflected in this policy before publication.
+For questions or privacy concerns, open a [GitHub Issue](https://github.com/reika140/pagelens/issues). Do not post private credentials, customer details or sensitive URLs in public reports. This policy will be updated before any material change in data handling.

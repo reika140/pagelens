@@ -33,6 +33,37 @@ function absoluteResource(input: string, pageUrl: string): string {
   } catch { return ''; }
 }
 
+/** Whitelist image preview schemes; never insert executable or page-authored HTML.
+ * Ordinary image URLs may be requested by Chrome when their thumbnail is visible. */
+export function safeImagePreviewSource(source: string): string {
+  if (!source || source.length > 250000) return '';
+  try {
+    const url = new URL(source);
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      // Reject embedded credentials and fragment-only differences.
+      if (url.username || url.password) return '';
+      url.hash = '';
+      return url.href;
+    }
+    // SVG and arbitrary data URLs aren't needed for safe thumbnail previews.
+    if (url.protocol === 'data:' && /^data:image\/(?:png|jpeg|webp|gif|avif|bmp);base64,[a-z0-9+/=]+$/i.test(source)) return source;
+  } catch { /* No usable preview source. */ }
+  return '';
+}
+
+/** Visible filename from the actual image source, never from its alt text or ID.
+ * Data/blob images and URLs without a filename deliberately return empty. */
+export function imageFilename(source: string): string {
+  if (!source) return '';
+  try {
+    const url = new URL(source);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return '';
+    const name = url.pathname.split('/').filter(Boolean).at(-1) ?? '';
+    if (!name) return '';
+    try { return decodeURIComponent(name); } catch { return name; }
+  } catch { return ''; }
+}
+
 export function inspectImage(image: RawImage, pageUrl: string): InspectedImage {
   const firstSrcset = image.srcset.trim().split(',')[0]?.trim().split(/\s+/)[0] ?? '';
   const candidates = [image.currentSrc, image.src, firstSrcset, image.lazySrc];

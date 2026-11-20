@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  classifyLink, inspectImage, headingHierarchy, inspectJsonLd, normalizeSnapshot,
+  classifyLink, inspectImage, safeImagePreviewSource, imageFilename, headingHierarchy, inspectJsonLd, normalizeSnapshot,
 } from '../dist/js/core/normalize.js';
 import { DEFAULT_HEURISTICS } from '../dist/js/core/types.js';
 import {
@@ -55,6 +55,24 @@ test('image alt absence differs from empty and nonempty alt; lazy and srcset can
   const unsafe=inspectImage(image(6,'Unsafe',{src:'javascript:alert(1)',lazySrc:''}),url);
   assert.equal(unsafe.sourceStatus,'unsafe');
   assert.equal(unsafe.source,'');
+});
+test('safe image thumbnail URL classification', () => {
+  assert.equal(safeImagePreviewSource('https://images.example.test/photo.jpg#preview'), 'https://images.example.test/photo.jpg');
+  assert.equal(safeImagePreviewSource('https://user:secret@images.example.test/photo.jpg'), '');
+  assert.equal(safeImagePreviewSource('javascript:alert(1)'), '');
+  assert.equal(safeImagePreviewSource('file:///etc/passwd'), '');
+  assert.equal(safeImagePreviewSource('data:image/svg+xml;base64,PHN2Zz4='), '');
+  assert.equal(safeImagePreviewSource('data:image/png;base64,aGVsbG8='), 'data:image/png;base64,aGVsbG8=');
+});
+test('visible image name comes from URL filename, never the alt or image index', () => {
+  assert.equal(imageFilename('https://example.com/assets/no-downtime.gif?size=720#hash'), 'no-downtime.gif');
+  assert.equal(imageFilename('https://cdn.example.test/banners/our%20service.webp?v=3'), 'our service.webp');
+  assert.equal(imageFilename('https://example.com/image/'), 'image');
+  assert.equal(imageFilename('https://example.com/'), '');
+  assert.equal(imageFilename('data:image/png;base64,aGVsbG8='), '');
+  assert.equal(imageFilename('blob:https://example.com/aa-bb'), '');
+  assert.equal(imageFilename('javascript:alert(1)'), '');
+  assert.equal(imageFilename(''), '');
 });
 test('document-order heading levels and skipped level detection', () => {
   const headings = headingHierarchy([heading(0,1),heading(1,2),heading(2,4),heading(3,3),heading(4,6)]);

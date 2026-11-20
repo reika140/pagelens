@@ -67,7 +67,7 @@ export function createMarkdown(scan: ScanResult): string {
   if (!scan.jsonLd.length) out += 'None found.\n';
   for (const block of scan.jsonLd) {
     out += `### Block ${block.id + 1}\n\n`;
-    out += item('Syntax', block.valid ? 'Valid JSON' : `Invalid/skipped: ${block.error}`);
+    out += item('Syntax', block.tooLarge ? `Not checked: ${block.error}` : block.valid ? 'Valid JSON syntax' : `JSON syntax error: ${block.error}`);
     out += item('Types', block.types.join(', ') || '(none)');
     out += item('Location', block.locator) + '\n';
     const content = block.formatted || block.source;

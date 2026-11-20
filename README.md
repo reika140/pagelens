@@ -2,77 +2,82 @@
 
 **A clearer look at the page you're on.**
 
-PageLens is a lightweight, open-source Chrome extension for inspecting the details behind a webpage. Open the toolbar popup to review metadata, heading structure, images, links, and JSON-LD without digging through DevTools.
+PageLens is an open-source Chrome extension that makes webpage inspection straightforward. Open the popup to check metadata, heading structure, image alt text, links, and JSON-LD — without a dense dashboard or made-up SEO scores.
 
-It can also label organic results on Google Search, so the first result is easy to distinguish from ads and other search features.
+**v1.5.0 Beta** · Chrome 116+ · Manifest V3 · [Build status](https://github.com/reika140/pagelens/actions/workflows/ci.yml) · [MIT License](LICENSE)
 
-**Chrome 116+ · Manifest V3 · MIT · [Build status](https://github.com/reika140/pagelens/actions/workflows/ci.yml)**
+![PageLens Metadata inspector reviewing index and follow directives on Google Search Central](docs/screenshots/real/pagelens-metadata-index-follow-google-search-central.webp)
 
-## In action
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/real/pagelens-headings-shopify.webp" width="100%" alt="PageLens displaying the heading hierarchy of Shopify's ecommerce guide">
-      <p align="center"><sub>Explore heading structure on Shopify</sub></p>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/real/pagelens-overview-webdev.webp" width="100%" alt="PageLens Overview inspecting the headings and sections guide on web.dev">
-      <p align="center"><sub>Inspect page details on web.dev</sub></p>
-    </td>
-  </tr>
-</table>
+*Metadata comes first: indexing directives, page title, description, canonical, and sharing tags. Captured from an installed extension on Google Search Central.*
 
 <details>
-  <summary>See organic numbering on Google Search</summary>
-  <p><img src="docs/screenshots/real/pagelens-organic-ranking-google.webp" width="100%" alt="PageLens displaying organic result numbers alongside a Google Search page with its dark popup open"></p>
-  <p><sub>Rank labels reflect the results shown in this browser session and may differ across users and searches.</sub></p>
+<summary>See more screenshots — Headings, Images, JSON-LD, and Settings</summary>
+
+**Heading structure**
+
+![PageLens Heading inspector showing Google Search Central H1 H2 H3 outline](docs/screenshots/real/pagelens-heading-structure-google-search-central.webp)
+
+**Image names and alt text**
+
+![PageLens Image inspector with thumbnails image filenames and alt text](docs/screenshots/real/pagelens-image-alt-text-preview-google-search-central.webp)
+
+**Structured data**
+
+![PageLens JSON-LD inspector showing BreadcrumbList schema and formatted JSON](docs/screenshots/real/pagelens-json-ld-structured-data-google-search-central.webp)
+
+**Preferences**
+
+![PageLens Settings with organic ranking numbering and link outline options](docs/screenshots/real/pagelens-extension-settings-organic-link-outlines.webp)
+
 </details>
 
-*Screenshots captured in Chrome on public websites. The featured sites are examples, not endorsements.*
+*All screenshots show PageLens running in Chrome on a public Google Search Central page. Google is not affiliated with or endorsing this project.*
 
-## What you can do
+## What PageLens does
 
-- **Understand a page at a glance.** See its title, description, canonical URL, robots directives, and relevant observations.
-- **Explore the structure.** Browse H1–H6 headings in order, check image alt attributes, and review internal and external links.
-- **Inspect structured data.** Read and copy formatted JSON-LD, including syntax errors and detected types.
-- **Copy or export useful details.** Copy headings or JSON-LD, and export filtered image and link lists to CSV.
-- **See organic positions on Google.** Automatically number recognized organic results on the first Google Search results page, with a simple On/Off switch in the popup.
+- **Metadata:** Start with Index/Follow indications from available meta robots directives. Review the title, description, canonical URL, Open Graph, X cards, and hreflang.
+- **Headings:** Read the H1–H6 outline in document order and copy it in one step.
+- **Images:** Browse thumbnails with the source filename and alt text. Find missing or empty alt attributes and export the list to CSV.
+- **Links:** Separate internal and external links, search or export them, and check HTTP responses across the page with a single **Check all** action. Progress, Stop, and Resume are built in.
+- **JSON-LD:** Inspect structured-data blocks, identify declared types, view formatted JSON, and distinguish valid syntax from Google rich-result eligibility.
+- **Settings:** Control Google organic result numbering, Follow/Nofollow/UGC link outlines, the appearance theme, and optional title/description length notices.
 
-PageLens reports what it can observe. It does not assign an arbitrary SEO score, claim that every empty alt is an error, or treat unverified links as broken.
+Findings are evidence-based. PageLens does not claim that every empty alt attribute is an error, that a missing meta robots tag blocks indexing, or that a CORS-blocked link is broken.
 
-## Get started
+## Install the beta
 
-PageLens is currently available as a **beta build**, not yet through the Chrome Web Store.
+PageLens is not yet published on the Chrome Web Store.
 
-1. Open a [successful CI run](https://github.com/reika140/pagelens/actions/workflows/ci.yml) and download the `pagelens-v1.3.3-popup-candidate` artifact (GitHub sign-in may be required).
-2. Unzip the artifact, then extract `releases/pagelens-v1.3.3-chrome-extension.zip`.
-3. Open `chrome://extensions`, enable **Developer mode**, and choose **Load unpacked**.
+1. Open a [successful GitHub Actions run](https://github.com/reika140/pagelens/actions/workflows/ci.yml) and download the **`pagelens-v1.5.0-popup-candidate`** artifact. GitHub sign-in may be required.
+2. Extract the artifact, then extract `releases/pagelens-v1.5.0-chrome-extension.zip`.
+3. Open `chrome://extensions` in Chrome, turn on **Developer mode**, and choose **Load unpacked**.
 4. Select the extracted extension folder containing `manifest.json`.
-5. Visit a webpage and click the **PageLens** icon in the Chrome toolbar.
+5. Visit an ordinary HTTP(S) page and click the PageLens toolbar icon.
 
-The popup scans the active tab when opened. Its six inspectors are available from the icon navigation on the left.
+The popup opens to **Metadata**. The other inspectors are accessible from the icon navigation on the left, with Settings at the bottom.
 
-### Organic numbering on Google
+## A few details worth knowing
 
-On supported first-page Web searches at `google.com` and `google.com.vn`, PageLens can show organic position numbers without opening the popup. The feature is **on by default** and can be turned off under **Automatic organic ranking numbers**.
+**HTTP status checking** runs only when you choose **Check all**. It deduplicates up to 2,000 URLs and limits concurrency to avoid flooding servers. External status checks may be blocked by browser CORS restrictions; these are marked *Not verified*, not broken. Keep the popup open while checking. Requests reach the destination servers, not PageLens.
 
-The labels are based on the visible page, not a rank-tracking API. Ads, AI Overview citations, and recognizable search features are excluded where they can be identified reliably. Google changes its layouts frequently, so some results may not be recognized.
+**Google organic numbering** runs on supported first-page Web results at `google.com` and `google.com.vn`, even without opening the popup. It is on by default and can be switched off in Settings. Labels reflect the visible page and are not an SEO ranking service; layouts Google changes or obscures may not be recognized.
 
-## Privacy, without the fine print
+**Link outlines** are off by default. When enabled, opening PageLens on a webpage marks Follow, Nofollow, and UGC links using colored dashed outlines. No all-sites permission is requested, and outlines do not automatically appear on a newly opened website until you click PageLens there.
 
-Page inspections run locally. PageLens has no account, analytics, or developer server, and it does not upload the pages or reports you inspect.
+## Privacy and permissions
 
-| Access | Why it's needed |
+PageLens performs inspection locally. It needs no account and has no analytics, remote scripts, developer server, or cloud dashboard. The extension does not upload inspected content or exported data to its developer.
+
+| Access | Purpose |
 | --- | --- |
-| `activeTab` | Inspect the page after you click the extension icon |
-| `scripting` | Read that page's DOM for the on-demand inspection |
-| `storage` | Remember whether organic numbering is On or Off |
-| Google Search page access | Display organic numbers automatically on supported Google domains |
+| `activeTab` | Temporarily inspect the active tab after a toolbar click |
+| `scripting` | Read webpage structure and optionally draw link outlines |
+| `storage` | Remember user preferences |
+| Google Search content scripts | Add optional organic result numbers on the declared Google domains |
 
-PageLens does **not** request access to every website. Its automatic content script is limited to the declared Google domains. See the [privacy policy](docs/privacy.md) for precise data-handling details.
+The extension does not request access to all websites. Remote image thumbnails may be requested from their original hosts as part of previewing images. See the [privacy policy](docs/privacy.md) for details.
 
-## Build it yourself
+## Build from source
 
 Requires Node.js 20+ and npm.
 
@@ -84,18 +89,10 @@ npm run check
 npm run build
 ```
 
-Load the generated `dist/` directory in Chrome using **Load unpacked**. To create ZIP distributions, run `npm run package` (Python 3.10+ required).
+Load the generated `dist/` directory in Chrome using **Load unpacked**. To create the distributable ZIPs, run `npm run package` (Python 3.10+). Browser tests use Playwright; see [architecture](docs/architecture.md) and [contributing](CONTRIBUTING.md).
 
-The code uses TypeScript, browser APIs, and no JavaScript runtime dependencies. For browser regression tests, see the [development documentation](docs/architecture.md) and [contribution guide](CONTRIBUTING.md).
+## Contributing and support
 
-## Project status
+PageLens v1.5.0 is a **beta**. Automated tests cover the core inspectors and representative browser fixtures, but live-site layouts and Chrome behavior can differ. Report reproducible problems through [GitHub Issues](https://github.com/reika140/pagelens/issues). Please remove any private data from screenshots and logs.
 
-**v1.3.3 — Beta.** Automated unit, DOM, and popup tests run in [GitHub Actions](https://github.com/reika140/pagelens/actions). Chrome Web Store submission is still pending. Search result classification is best-effort because Google's HTML can change.
-
-If something looks wrong, [open an issue](https://github.com/reika140/pagelens/issues) with a public reproduction page and your Chrome version. Please remove sensitive information from screenshots.
-
-## Contributing and license
-
-Bug reports and focused pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md); security concerns are covered in [SECURITY.md](SECURITY.md).
-
-PageLens is maintained by [reika140](https://github.com/reika140) and released under the [MIT License](LICENSE). Bundled Be Vietnam Pro fonts are licensed separately under OFL-1.1; details are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). PageLens is maintained by [reika140](https://github.com/reika140). Source code is [MIT licensed](LICENSE); bundled Be Vietnam Pro fonts use OFL-1.1 ([third-party notices](THIRD_PARTY_NOTICES.md)).

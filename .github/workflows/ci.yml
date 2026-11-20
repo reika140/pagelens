@@ -29,7 +29,7 @@ jobs:
       - name: Upload build and ZIPs
         uses: actions/upload-artifact@v4
         with:
-          name: pagelens-v1.3.3-popup-candidate
+          name: pagelens-v1.5.0-popup-candidate
           path: |
             dist/
             releases/*.zip
@@ -58,6 +58,10 @@ jobs:
         run: npm run test:browser
       - name: Run compiled popup UI tests
         run: npm run test:ui
+      - name: Validate live local HTTP response fixtures
+        run: npm run test:http
+      - name: Verify Follow, Nofollow and UGC link outlines
+        run: npm run test:links
       - name: Test first-page organic Google SERP numbering
         run: npm run test:serp
       - name: Test automatic Google numbering and On/Off persistence
@@ -67,12 +71,9 @@ jobs:
         with:
           name: pagelens-ui-fixture-previews
           path: |
-            docs/screenshots/overview-fixture-preview.png
-            docs/screenshots/overview-fixture-dark-preview.png
+            docs/screenshots/metadata-fixture-preview.png
+            docs/screenshots/settings-fixture-preview.png
             docs/screenshots/headings-fixture-preview.png
             docs/screenshots/links-fixture-preview.png
-            docs/screenshots/google-serp-popup-fixture-preview.png
             docs/screenshots/google-serp-organic-fixture-preview.png
             docs/screenshots/google-auto-organic-first-page-fixture.png
-            docs/screenshots/google-serp-svg-organic-fixture-preview.png
-            docs/screenshots/google-serp-svg-css-hostile-preview.png

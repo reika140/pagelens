@@ -14,7 +14,7 @@ PageLens is a free, open-source Chrome extension for checking what is actually o
 
 ## See PageLens in action
 
-![PageLens checking indexing directives, title and meta description in Chrome](docs/screenshots/real/pagelens-metadata-index-follow-google-search-central.webp)
+![PageLens checking indexing directives, title and meta description in Chrome](docs/chrome-web-store/assets/01-metadata-overview.png)
 
 *Start with the essentials: Index/Follow indications, title, meta description, canonical URL, and more.*
 
@@ -23,23 +23,23 @@ PageLens is a free, open-source Chrome extension for checking what is actually o
 
 **Headings — read the page outline at a glance**
 
-![PageLens showing the H1 to H3 heading structure of a Google Search Central article](docs/screenshots/real/pagelens-heading-structure-google-search-central.webp)
+![PageLens showing the H1 to H3 heading structure of a Google Search Central article](docs/chrome-web-store/assets/02-heading-structure.png)
 
 **Images — preview each image and its alt text**
 
-![PageLens showing image thumbnails, filenames, and alt text](docs/screenshots/real/pagelens-image-alt-text-preview-google-search-central.webp)
+![PageLens showing image thumbnails, filenames, and alt text](docs/chrome-web-store/assets/03-image-details.png)
 
 **Structured data — explore JSON-LD clearly**
 
-![PageLens displaying detected JSON-LD types and formatted JSON](docs/screenshots/real/pagelens-json-ld-structured-data-google-search-central.webp)
+![PageLens displaying detected JSON-LD types and formatted JSON](docs/chrome-web-store/assets/04-structured-data.png)
 
 **Settings — choose what you want to see**
 
-![PageLens settings for organic result numbering, link outlines, and appearance](docs/screenshots/real/pagelens-extension-settings-organic-link-outlines.webp)
+![PageLens settings for organic result numbering, link outlines, and appearance](docs/chrome-web-store/assets/05-settings-and-controls.png)
 
 </details>
 
-*Screenshots were captured in Chrome on a public Google Search Central page. The example website does not endorse PageLens.*
+*Store artwork is built from authentic Chrome screenshots on a public Google Search Central page, using only local cropping, typography, borders, and shadows. Original captures are preserved in [docs/screenshots/real](docs/screenshots/real). Google does not endorse PageLens.*
 
 ## What you can do
 

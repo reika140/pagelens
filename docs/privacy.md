@@ -15,7 +15,7 @@ PageLens has three inspection/annotation features and an optional link-checking 
 
 ## Collection, processing and retention
 
-The inspection and annotation features process page information locally in the browser. PageLens does not upload scan results, inspected URLs, search queries or exported files to the publisher or a developer server. Image thumbnails may request their original URL from the image host; that host may receive an ordinary image request. On-demand HTTP checks contact the linked hosts directly. Those hosts may receive your IP address and request details, but PageLens itself receives no telemetry. It has no analytics, user accounts, remote executable code, ads or telemetry.
+The inspection and annotation features process page information locally in the browser. PageLens does not upload scan results, inspected URLs, search queries or exported files to the publisher or a developer server. Image thumbnails may request their original URL from the image host; that host may receive an ordinary image request. On-demand HTTP checks contact the linked hosts directly. Those hosts may receive your IP address and request details, but PageLens itself receives no telemetry. It has no analytics, user accounts, remote executable code, or ads. PageLens does not sell user data or use it for advertising, profiling, or unrelated purposes.
 
 - Popup inspection and HTTP check results stay in memory until the popup closes.
 - Google ranking labels and on-demand link annotations exist only as temporary DOM additions on the displayed page and disappear when disabled or on navigation.
@@ -39,6 +39,16 @@ There are no all-site `host_permissions` or `optional_host_permissions`. The Goo
 Open **Settings** in the PageLens popup to switch organic numbering or link highlighting On or Off. Turning link highlighting Off removes the outlines from previously activated tabs that are still open. Other tabs are not annotated until PageLens is clicked on each of them.
 
 Uninstalling PageLens removes its extension storage. Manually downloaded CSV files remain yours until you delete them.
+
+## Chrome Web Store Limited Use
+
+PageLens's use of browsing activity, website content, and related technical page information complies with the [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/program-policies/limited-use/), including the Limited Use requirements.
+
+PageLens processes this information only as necessary to provide or improve its disclosed single purpose: inspecting and annotating technical properties of the current webpage and supported Google Search results. Inspection results, search queries, and exported data are not transmitted to the publisher or to a developer-operated server.
+
+PageLens does not sell user data, share it with advertising networks or data brokers, or use it for personalized advertising, profiling, unrelated purposes, creditworthiness assessments, or lending. The publisher cannot access locally processed inspection data. If you voluntarily provide information in a public support issue, that issue's contents are visible to its readers.
+
+The only routine third-party network contacts are those already described above: image previews may load from the original image hosts, and an explicit **Check all** action sends HTTP requests to the URLs on the inspected page. Those third-party websites may observe standard request information, including your IP address. PageLens does not send these results to the publisher.
 
 ## Contact
 

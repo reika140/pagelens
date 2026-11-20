@@ -1,0 +1,50 @@
+name: Build PageLens Chrome Web Store screenshots
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-store-assets.py"
+      - ".github/workflows/store-screenshots.yml"
+      - "docs/screenshots/real/*.webp"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  artwork:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install image processing dependency
+        run: python -m pip install "Pillow==11.3.0"
+      - name: Render 5 screenshots from authentic Chrome captures
+        run: python scripts/build-store-assets.py
+      - name: Validate images
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          files = sorted(Path("docs/chrome-web-store/assets").glob("*.png"))
+          assert len(files) == 5, files
+          for file in files:
+              with Image.open(file) as image:
+                  assert image.size == (1280, 800), (file, image.size)
+                  assert image.format == "PNG"
+          print("Validated five 1280x800 PNG screenshots")
+          PY
+      - name: Commit generated screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/chrome-web-store/assets/
+          if ! git diff --cached --quiet; then
+            git commit -m "assets: add authentic PageLens Chrome Web Store screenshots"
+            git push
+          fi

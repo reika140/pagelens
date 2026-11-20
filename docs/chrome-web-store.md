@@ -60,7 +60,15 @@ Suggested order for the five real Chrome screenshots:
 4. JSON-LD structured data
 5. Settings
 
-Use **PNG or JPEG** for Store screenshots, not the WebP files optimized for GitHub README. Do not substitute Playwright HTML fixtures for captures from a real installed extension. Check each screenshot for account details, browser profile information, misleading claims, or unrelated visual clutter.
+Five **1280 x 800 PNG** screenshots are already available in [docs/chrome-web-store/assets](chrome-web-store/assets/):
+
+1. [Metadata overview](chrome-web-store/assets/01-metadata-overview.png)
+2. [Heading structure](chrome-web-store/assets/02-heading-structure.png)
+3. [Image details](chrome-web-store/assets/03-image-details.png)
+4. [Structured data](chrome-web-store/assets/04-structured-data.png)
+5. [Settings and controls](chrome-web-store/assets/05-settings-and-controls.png)
+
+They are composited with Pillow from original Chrome captures in [docs/screenshots/real](screenshots/real/), not AI-generated mockups or local DOM fixtures. To rebuild consistently, run `python -m pip install Pillow==11.3.0` followed by `python scripts/build-store-assets.py`. The GitHub Actions workflow also regenerates them when source images or the script change. Screenshots are Store listing assets; **do not bundle them into the extension ZIP**. Before submitting, verify screenshots contain no account details, private URLs, or misleading claims.
 
 ## Reviewer steps
 

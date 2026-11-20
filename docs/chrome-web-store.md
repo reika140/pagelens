@@ -1,65 +1,86 @@
-# Chrome Web Store submission notes — PageLens v1.5.0
+# Chrome Web Store listing — PageLens v1.5.0
 
-**Publisher:** [reika140](https://github.com/reika140)  
-**Status:** Beta, not submitted or approved.
+PageLens is a Chrome extension for on-page inspection. This document contains public-facing listing copy and a review checklist. It does **not** mean that the extension has been submitted or approved.
 
-## Single purpose
-
-Local inspection and annotation of website and search-result technical properties, including metadata, links and Google organic result positions. All analysis takes place in the user's browser.
-
-## Listing text (English)
+## Store listing
 
 **Name:** PageLens — Website Inspector
 
-**Short description:** Inspect metadata, headings, images, links and JSON-LD, with optional link highlighting and Google organic numbering.
+**Category:** Developer Tools
 
-**Description:**
+**Language:** English
 
-PageLens makes page inspection easier. Open its compact toolbar popup to review title, robots meta directives, canonical URL, heading structure, image alt attributes, internal and external links, and JSON-LD. Copy headings, inspect evidence and export filtered image/link lists as CSV. The Check all action inspects link response status codes on demand, with no permanent crawling.
+**Short description:** Inspect webpage metadata, headings, images, links, and JSON-LD in a simple popup. Check links and view organic results.
 
-For supported Google Search results, PageLens can number recognized organic results automatically. Optionally enable color-coded Follow, Nofollow and UGC link annotations on webpages. The two features can be switched On or Off independently in Settings. Link outlines are applied after the user clicks the PageLens toolbar icon on a page; there is no all-sites permission request.
+**Detailed description (ready to paste):**
 
-PageLens is free and open-source, has no login, and does not upload webpage data to a developer server. The optional Check HTTP action sends limited HEAD/GET requests directly to destination websites when clicked. It does not provide arbitrary SEO scores, full-site crawling or remote ranking data.
+PageLens lets you take a closer look at the webpage you are viewing, without opening developer tools. Click the PageLens icon and get a clean, readable view of the page's technical details.
 
-**Language:** English  
-**Website:** https://github.com/reika140/pagelens  
-**Support:** https://github.com/reika140/pagelens/issues  
-**Privacy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md
+Use PageLens to:
+- Review the page title, meta description, Index/Follow directives, canonical URL, social tags, and hreflang links.
+- Explore H1–H6 headings in reading order and copy the heading outline.
+- Preview images alongside their filenames and alt text, then export the results.
+- Browse internal and external links, export CSV, and check HTTP responses with a single Check all action.
+- Read JSON-LD structured data with detected types and formatted JSON.
+- Optionally show organic result numbers on supported Google Search pages or outline Follow, Nofollow, and UGC links on pages you inspect.
 
-## Permission justification
+No account is required. The extension does not send inspected page content to a PageLens server. Preferences are saved locally. On-demand HTTP checks contact the linked websites directly, and some responses may be unavailable because of browser CORS restrictions.
 
-| Permission | Justification |
-| --- | --- |
-| `activeTab` | On-demand access after opening PageLens |
-| `scripting` | Inspect a user-activated tab, annotate links and run bounded HTTP checks after a separate explicit click |
-| `storage` | Remember two independent On/Off settings |
-| Google-only content script | Automatically annotate recognized organic results |
+PageLens focuses on observable page information. It does not provide arbitrary SEO scores, claim every empty alt attribute is an error, or verify Google rich-result eligibility.
 
-PageLens declares **no** HTTP(S) `host_permissions` or `optional_host_permissions`. Outside the separately authorized Google Search domains, PageLens can inspect or annotate a webpage only following a deliberate toolbar click. Chrome may make image requests to display remote thumbnails. The optional, user-triggered HTTP checker processes distinct URLs in 16-URL batches, with at most 10 concurrent requests and a 2,000-URL safety cap per user click. The user can Stop/Resume and see progress; external checks obey CORS. No scanned data is uploaded to a PageLens server.
+PageLens is free, open source, and currently in beta.
 
-## Reviewer instructions
+**Project website:** https://github.com/reika140/pagelens
 
-1. Install v1.5.0 and open a regular public webpage.
-2. Click the PageLens toolbar icon; confirm Metadata opens first, Index/Follow appear above title/description and the five other navigation destinations work.
-3. Verify Headings Copy, Images/Links filtered CSV and formatted JSON-LD; Image filename and alt text use equal font sizes and Regular weight.
-4. In Links, select Check all on a test page with HTTP 200/401/402/403/501 responses. Confirm status labels and that cross-origin CORS failures are Not verified, not broken.
-5. Visit a supported Google Search page-one query; organic number labels should appear when enabled without opening the popup.
-6. Open the **Settings** destination (last rail icon). Turn organic numbering Off and On.
-7. Verify link outlines are Off by default. Turn it On, visit a page with Follow, Nofollow and UGC links, and click the PageLens toolbar icon.
-8. Confirm the colored dashed outlines, then disable highlighting and verify they disappear. Opening a new website without clicking PageLens should not add outlines.
-9. No account, server, API key or payment is needed.
+**Support:** https://github.com/reika140/pagelens/issues
 
-## Submission requirements
+**Privacy policy:** https://github.com/reika140/pagelens/blob/main/docs/privacy.md
 
-- Use the **compiled extension ZIP**, not the source ZIP.
-- Test with an unrestricted Chrome Desktop installation. Fixture tests do not validate permission dialogs.
-- Submit genuine screenshots of the installed extension, not HTML fixtures or mockups; ensure all visible content is English and contains no account data.
-- Audit required permissions and content-script matches against the installed manifest.
-- Ensure the public GitHub repository and privacy policy describe exactly the same version as the submitted ZIP.
-- Recheck the current Chrome Web Store policy and privacy practices at submission time.
+## Privacy practices and permission justifications
 
-Official references:
+**Single purpose:** Inspect and annotate technical properties of the current webpage and supported Google Search results, using local browser processing.
 
-- https://developer.chrome.com/docs/webstore/program-policies/policies
-- https://developer.chrome.com/docs/extensions/reference/api/permissions
-- https://developer.chrome.com/docs/extensions/reference/api/scripting
+- **activeTab:** Temporarily inspect the current webpage after the user clicks the toolbar icon.
+- **scripting:** Read DOM attributes and optionally outline link types in the user-activated tab.
+- **storage:** Save the user's organic-numbering and link-outline preferences locally.
+- **Google-only content scripts:** Display optional organic result numbers on declared Google Search domains without requiring a toolbar click.
+
+No all-sites host permission or optional all-sites host permission is requested. PageLens does not transmit inspected page content or search queries to a developer server and does not load remote executable code. Image previews may load images from their original hosts. A user-initiated HTTP status check sends bounded HEAD/GET requests to link destinations, which may observe normal request metadata (including IP address). Do not describe those requests as offline.
+
+These disclosures must match the privacy policy and installed manifest.
+
+## Graphics and screenshots
+
+The listing requires a **128 × 128 icon** and at least one genuine screenshot **1280 × 800** (or 640 × 400). Up to five screenshots can be provided. Small promo tile 440 × 280 and marquee 1400 × 560 are optional.
+
+Suggested order for the five real Chrome screenshots:
+1. Metadata and Index/Follow
+2. Headings
+3. Image previews and alt text
+4. JSON-LD structured data
+5. Settings
+
+Use **PNG or JPEG** for Store screenshots, not the WebP files optimized for GitHub README. Do not substitute Playwright HTML fixtures for captures from a real installed extension. Check each screenshot for account details, browser profile information, misleading claims, or unrelated visual clutter.
+
+## Reviewer steps
+
+1. Install the extension ZIP and open a public HTTP(S) page.
+2. Click PageLens in Chrome's toolbar. The popup should open to Metadata, with Index/Follow at the top.
+3. Browse Headings, Images, Links, JSON-LD and Settings. Check Copy and CSV export.
+4. Open Links and click Check all. Status codes can be displayed where the browser can read them; CORS failures show Not verified.
+5. Use a supported first-page Google Web Search to see optional organic numbering; toggle it in Settings.
+6. Enable link outlines in Settings and open PageLens on a page with Follow, Nofollow, and UGC links. The colored outlines should appear without asking for all-site access.
+7. No account, API key, subscription, or payment is needed.
+
+## Before submission
+
+- Confirm the ZIP is v1.5.0 and its Manifest V3 permissions match these claims.
+- Verify all principal features and the extension toolbar flow on a real Chrome Desktop profile.
+- Check the current Developer Dashboard for graphic sizes and required privacy disclosures.
+- Ensure the public privacy policy, screenshots, listing copy, and tested ZIP describe the same behavior.
+- Do not claim Chrome Web Store approval until Google actually approves the listing.
+
+Official guidance:
+- https://developer.chrome.com/docs/webstore/cws-dashboard-listing
+- https://developer.chrome.com/docs/webstore/best-listing
+- https://developer.chrome.com/docs/webstore/cws-dashboard-privacy

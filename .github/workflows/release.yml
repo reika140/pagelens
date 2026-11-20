@@ -1,0 +1,59 @@
+name: Publish PageLens release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/releases/v*.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit
+      - name: Verify extension and build release packages
+        run: |
+          npm run check
+          node scripts/package.mjs
+      - name: Validate version and distributable ZIP
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from zipfile import ZipFile
+          root = Path('.')
+          v = json.loads((root / 'manifest.json').read_text())['version']
+          assert (root / 'docs' / 'releases' / f'v{v}.md').is_file()
+          zpath = root / 'releases' / f'pagelens-v{v}-chrome-extension.zip'
+          with ZipFile(zpath) as z:
+              assert z.testzip() is None
+              manifest = json.loads(z.read('manifest.json'))
+              assert manifest['version'] == v
+              assert manifest['manifest_version'] == 3
+              assert not manifest.get('host_permissions')
+              assert not manifest.get('optional_host_permissions')
+              assert set(manifest['permissions']) == {'activeTab','scripting','storage'}
+          print(f'Validated packaged PageLens v{v}')
+          PY
+      - name: Publish GitHub beta release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(node -p "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8')).version")"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "Release v$VERSION already exists; no overwrite performed."
+            exit 0
+          fi
+          gh release create "v$VERSION"             "releases/pagelens-v$VERSION-chrome-extension.zip"             "releases/pagelens-v$VERSION-source.zip"             "releases/SHA256SUMS.txt"             --title "PageLens v$VERSION"             --notes-file "docs/releases/v$VERSION.md"             --target "$GITHUB_SHA"             --prerelease
